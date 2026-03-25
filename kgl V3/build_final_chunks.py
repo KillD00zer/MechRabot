@@ -23,7 +23,7 @@ raw_chunks = json.load(open("chunks.json"))
 print(f"  → {len(raw_chunks)} chunks")
 
 print("Loading output_V3.json for image data...")
-doc = json.load(open("output_V3.json"))
+doc = json.load(open("output_V3_fullresult.json"))
 print(f"  → {len(doc['pictures'])} pictures, {len(doc['pages'])} pages")
 
 # ============================================================
