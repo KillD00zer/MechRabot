@@ -4,7 +4,7 @@
 
 
 ⚙️ MECHRABOT
-📖 Introduction
+
 MECHRABOT is an advanced Retrieval-Augmented Generation (RAG) engine purpose-built for navigating and extracting insights from complex mechanical maintenance manuals. Designed for high-precision technical environments, it transforms static documentation into an interactive, context-aware diagnostic intelligence system.
 
 ✨ Features
