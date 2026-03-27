@@ -102,7 +102,57 @@ This is the most critical architectural decision for your project. Here is a dee
 
 ---
 
-## 6. Recommended Architecture (Summary)
+## 6. Fine-Tuning Frameworks (For Kaggle)
+
+Since we confirmed that `sayed0am/arabic-english-bge-m3` fails on Egyptian mechanical slang (e.g., "سير كاتينة" scored lower than "كلب بلدي"), fine-tuning is mandatory. Here are the framework options for doing this on Kaggle's free T4 GPUs.
+
+### What Fine-Tuning Actually Does
+You are teaching the model: *"When you see the Arabic text 'سير كاتينة', understand that it means the exact same thing as 'Timing Belt'."* You do this by creating pairs of (Arabic Query, English Chunk) and training the model to push their vectors closer together in that 1024-dimensional space.
+
+### Framework Comparison
+
+| Framework | Made By | Complexity | BGE-M3 Support | LoRA Support | Best Use Case |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **FlagEmbedding** | BAAI (BGE creators) | Medium | **Native & Official** — supports dense, sparse, AND ColBERT fine-tuning simultaneously ("unified fine-tuning"). | ✅ Yes | **Top Pick.** The official toolkit for BGE models. Includes built-in hard negative mining (automatically finds confusing wrong answers to make the model smarter). |
+| **Sentence-Transformers** | HuggingFace | **Low** (Easiest) | Good — treats BGE-M3 as a standard dense encoder. Cannot fine-tune the sparse/ColBERT outputs. | ✅ Yes (via PEFT) | Best if you only care about dense vector matching (which is what `sayed0am` uses). Extremely simple API, tons of Kaggle notebook examples exist. |
+| **Manual PyTorch** | You | High | Full control | ✅ Yes (via PEFT/LoRA) | Only if both frameworks above don't fit your exact needs. Maximum flexibility, maximum effort. |
+
+### Training Data Format
+
+Both frameworks expect your data in a similar structure. You need to create pairs or triplets:
+
+**Pairs format** (simplest):
+```json
+{"query": "سير كاتينة", "passage": "The timing belt synchronizes the crankshaft and camshafts..."}
+{"query": "جلبة مقص", "passage": "The lower control arm bushing absorbs road vibrations..."}
+{"query": "رقم قطعة عمود الكامات", "passage": "Camshaft Part No. CS-7720..."}
+```
+
+**Triplets format** (stronger training signal):
+```json
+{"query": "سير كاتينة", "positive": "The timing belt...", "negative": "The spark plug wire..."}
+```
+
+### Kaggle-Specific Constraints
+
+| Constraint | Kaggle Free Tier | Impact on Fine-Tuning |
+| :--- | :--- | :--- |
+| GPU | T4 (16 GB VRAM) x2 | Enough for `sayed0am` (~1.2 GB model). **Not enough** for `e5-mistral-7b` (14 GB). |
+| Session Time | 6 hours max | Fine-tuning `sayed0am` with ~2000 pairs should complete in **~30 minutes** on T4. Plenty of time. |
+| Weekly GPU Quota | 30 hours/week | More than enough for multiple fine-tuning experiments. |
+| Storage | ~20 GB scratch | Enough to store model weights + training data + output adapter. |
+
+### Recommendation for Your Project
+
+> [!IMPORTANT]
+> **Use `FlagEmbedding`** for your fine-tuning run. Here is why:
+> 1. We are using the original, unpruned `BAAI/bge-m3` model.
+> 2. `FlagEmbedding` allows "Unified Fine-Tuning" to train the model's dense, sparse (keyword), and ColBERT (token-level) outputs simultaneously.
+> 3. This guarantees we don't lose the exact keyword matching capability (which is critical for mechanical part numbers).
+
+---
+
+## 7. Recommended Architecture (Summary)
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -122,7 +172,7 @@ This is the most critical architectural decision for your project. Here is a dee
 │  └──────────┘  └──────────┘  └───────────────────┘  │
 │                                                      │
 │  ┌──────────────────────────────────────────────┐    │
-│  │  BGE-M3 or arabic-english-bge-m3 (Embeddings)│    │
+│  │  BAAI/bge-m3 (Embeddings)                    │    │
 │  └──────────────────────────────────────────────┘    │
 │                                                      │
 │  ┌──────────────────────────────────────────────┐    │
@@ -144,8 +194,8 @@ Fine-tuning (if needed):
 
 ## Decision Checklist
 
-- `[ ]` **1. Embedding Model**: Start with `sayed0am/arabic-english-bge-m3` (Arabic-optimized, smaller) or full `BAAI/bge-m3`?
-- `[ ]` **2. Arabic Strategy**: Test BGE-M3 out-of-the-box first → Fine-tune if needed → Translation as last resort?
+- `[x]` **1. Embedding Model**: Locked in **`BAAI/bge-m3`** (Largest, safest, full M3 support).
+- `[x]` **2. Arabic Strategy**: Fine-tune `BAAI/bge-m3` on Kaggle using `FlagEmbedding` + Add LLM Translation Layer to UI as a premium fallback.
 - `[ ]` **3. Framework**: LlamaIndex (code-first) vs RAGFlow (visual pipeline)?
 - `[ ]` **4. Hosting for Testing**: Google Colab + ngrok (free) or RunPod ($0.40/hr, more stable)?
 - `[ ]` **5. LLM**: Which generative model? (Llama-3 8B, Mistral 7B, Qwen-2.5 7B?)
