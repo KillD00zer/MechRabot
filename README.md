@@ -2,7 +2,7 @@
 
 ![Cover Image](Gemini_Generated_Image_7vi6q47vi6q47vi6.jpg)
 
-Gemini said
+
 ⚙️ MECHRABOT
 📖 Introduction
 MECHRABOT is an advanced Retrieval-Augmented Generation (RAG) engine purpose-built for navigating and extracting insights from complex mechanical maintenance manuals. Designed for high-precision technical environments, it transforms static documentation into an interactive, context-aware diagnostic intelligence system.
