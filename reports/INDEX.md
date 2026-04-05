@@ -21,8 +21,12 @@ reports/
 │   ├── retrieval_paradigms_guide.md              ← Dense vs Sparse vs ColBERT full guide
 │   └── bge_m3_output_explained.md                ← understanding BGE-M3's three output vectors
 │
-└── 04_storage_transport/
-    └── kaggle_to_qdrant_transport.md             ← how to move embeddings from Kaggle to Qdrant
+├── 04_storage_transport/
+│   └── kaggle_to_qdrant_transport.md             ← how to move embeddings from Kaggle to Qdrant
+│
+└── 05_evaluation/
+    ├── eval_dataset.json                          ← 30 grounded queries (EN + AR + mixed)
+    └── README.md                                  ← how to run retrieval evaluation
 ```
 
 ---

@@ -1,0 +1,422 @@
+{
+  "metadata": {
+    "version": "V1",
+    "total_queries": 30,
+    "corpus": "final_chunks_v2.json",
+    "corpus_size": 2790,
+    "split": {
+      "en_specs": 10,
+      "en_procedural_diag": 10,
+      "ar_specs": 5,
+      "ar_procedural": 5
+    },
+    "language_codes": {
+      "en": "English",
+      "ar": "Formal Arabic (MSA)",
+      "ar_slang": "Egyptian Colloquial Arabic"
+    }
+  },
+
+  "queries": [
+
+    // ─────────────────────────────────────────────────────────
+    // BLOCK A: English — Specifications (10 queries)
+    // Tests: sparse retrieval on numbers/units, dense on
+    //        semantic paraphrasing of spec names
+    // ─────────────────────────────────────────────────────────
+
+    {
+      "id": "EV-001",
+      "language": "en",
+      "category": "spec",
+      "topic": "engine_oil_pressure",
+      "difficulty": "easy",
+      "query": "What is the engine oil pressure at idle speed?",
+      "expected_answer": "1.2 - 1.5 bar at lower idle (800 ± 50 RPM)",
+      "relevant_chunk_ids": ["e53006fd-7590-c882-6ba5-fef1923f37cf"],
+      "notes": "Direct numeric spec. Sparse should hit 'oil pressure' + 'bar' exactly."
+    },
+
+    {
+      "id": "EV-002",
+      "language": "en",
+      "category": "spec",
+      "topic": "engine_oil_pressure",
+      "difficulty": "medium",
+      "query": "What is the oil pressure spec at high engine speed (4000 RPM)?",
+      "expected_answer": "3.7 ± 0.5 bar at 4000 RPM",
+      "relevant_chunk_ids": ["e53006fd-7590-c882-6ba5-fef1923f37cf"],
+      "notes": "Same chunk as EV-001 but different value. Tests granularity within a chunk."
+    },
+
+    {
+      "id": "EV-003",
+      "language": "en",
+      "category": "spec",
+      "topic": "compression_pressure",
+      "difficulty": "medium",
+      "query": "What is the recommended engine compression pressure and when should it be used?",
+      "expected_answer": "Used only as a guide for diagnosing engine problems, not to trigger disassembly alone.",
+      "relevant_chunk_ids": ["0a3c59cd-47fb-ec8b-295c-e75ea93157e6"],
+      "notes": "Tests retrieval of a NOTE-type spec with diagnostic context, not just a raw number."
+    },
+
+    {
+      "id": "EV-004",
+      "language": "en",
+      "category": "spec",
+      "topic": "cylinder_head_cover_bolt",
+      "difficulty": "easy",
+      "query": "What is the torque for cylinder head cover bolts?",
+      "expected_answer": "11 N·m",
+      "relevant_chunk_ids": ["4b47c198-ab11-ccae-3e5e-781c96555016"],
+      "notes": "Simple single-value torque. Sparse should hit 'cylinder head cover bolt' + 'N·m'."
+    },
+
+    {
+      "id": "EV-005",
+      "language": "en",
+      "category": "spec",
+      "topic": "crankshaft_timing_belt_pulley",
+      "difficulty": "hard",
+      "query": "What is the multi-step torque procedure for the crankshaft timing belt pulley bolt?",
+      "expected_answer": "Step 1: 130 N·m, Step 2: additional 65°",
+      "relevant_chunk_ids": ["d5ab9238-f5d8-684e-d4f6-40c684c143a2"],
+      "notes": "Multi-step torque with angle. Tests dense understanding of 'multi-step procedure' + sparse on values."
+    },
+
+    {
+      "id": "EV-006",
+      "language": "en",
+      "category": "spec",
+      "topic": "throttle_body",
+      "difficulty": "easy",
+      "query": "What is the torque specification for throttle body bolts?",
+      "expected_answer": "11 N·m",
+      "relevant_chunk_ids": ["302b67a2-4f4a-0026-7a04-f8f9c4cc5616"],
+      "notes": "Sparse-friendly. 'Throttle Body Bolts' appears as exact phrase in chunk."
+    },
+
+    {
+      "id": "EV-007",
+      "language": "en",
+      "category": "spec",
+      "topic": "exhaust_manifold",
+      "difficulty": "medium",
+      "query": "How many bolts secure the exhaust manifold to the catalytic converter, and how do you remove them?",
+      "expected_answer": "Three bolts (1) are removed first, then the catalytic converter assembly is disconnected.",
+      "relevant_chunk_ids": ["d22322c2-825a-b049-7390-3b7f7fb7fd11"],
+      "notes": "Number + procedure hybrid query. Tests dense understanding of 'three bolts' concept."
+    },
+
+    {
+      "id": "EV-008",
+      "language": "en",
+      "category": "spec",
+      "topic": "idler_pulley",
+      "difficulty": "easy",
+      "query": "What is the torque for the upper accessory drive belt idler pulley bolt?",
+      "expected_answer": "45 N·m",
+      "relevant_chunk_ids": ["dc729ffd-a211-8c1a-ea6a-93ebcf1bfefc"],
+      "notes": "Specific component torque. Long component name tests sparse token matching."
+    },
+
+    {
+      "id": "EV-009",
+      "language": "en",
+      "category": "spec",
+      "topic": "timing_belt_tensioner",
+      "difficulty": "medium",
+      "query": "What is the torque for the accessory drive belt tensioner pulley bolt?",
+      "expected_answer": "Found in CAUTION section — multi-step torque applies (do not use torque wrench for 2nd step)",
+      "relevant_chunk_ids": ["4a585f04-bb85-c70b-89e9-393ce6313cd2"],
+      "notes": "Spec is inside a CAUTION block. Tests retrieval of safety-flagged spec chunks."
+    },
+
+    {
+      "id": "EV-010",
+      "language": "en",
+      "category": "spec",
+      "topic": "timing_belt_tensioner_install",
+      "difficulty": "medium",
+      "query": "How should the timing belt tensioner be aligned during installation?",
+      "expected_answer": "Rotate tensioner pulley with Allen wrench to apply tension and align finger pointer to middle of the indicator.",
+      "relevant_chunk_ids": ["626b58a3-9c3d-11d6-5f59-9adc3571bf8d"],
+      "notes": "Procedural spec hybrid. Tests dense retrieval on 'align tensioner finger pointer'."
+    },
+
+    // ─────────────────────────────────────────────────────────
+    // BLOCK B: English — Procedures & Diagnostics (10 queries)
+    //          4 of these are from the Electrical section (EV-017 to EV-020)
+    // ─────────────────────────────────────────────────────────
+
+    {
+      "id": "EV-011",
+      "language": "en",
+      "category": "procedural",
+      "topic": "drive_belt_removal",
+      "difficulty": "medium",
+      "query": "What are the steps to remove the accessory drive belt?",
+      "expected_answer": "Involves releasing tensioner pulley bolt and generator bolts — see Removal & Installation section.",
+      "relevant_chunk_ids": ["50569246-ae91-71e9-25e8-5b271708d81a"],
+      "notes": "Standard procedure lookup. Dense retrieval on 'remove accessory drive belt'."
+    },
+
+    {
+      "id": "EV-012",
+      "language": "en",
+      "category": "procedural",
+      "topic": "air_cleaner_removal",
+      "difficulty": "easy",
+      "query": "How do I remove and replace the air cleaner element?",
+      "expected_answer": "Remove air cleaner case side bolts, remove upper case, replace element, reinstall.",
+      "relevant_chunk_ids": ["3d39e04b-a5f7-0254-4fa2-51d06453af86"],
+      "notes": "Simple step-by-step. Tests basic procedural retrieval."
+    },
+
+    {
+      "id": "EV-013",
+      "language": "en",
+      "category": "procedural",
+      "topic": "battery_disconnect",
+      "difficulty": "easy",
+      "query": "What is the first step before beginning any removal procedure?",
+      "expected_answer": "Disconnect the negative battery cable.",
+      "relevant_chunk_ids": ["5e925158-d94f-922f-cd0e-c548fb66df31"],
+      "notes": "Safety-first procedural. Dense should understand 'first step' = 'disconnect battery'."
+    },
+
+    {
+      "id": "EV-014",
+      "language": "en",
+      "category": "procedural",
+      "topic": "cylinder_head_cover_removal",
+      "difficulty": "medium",
+      "query": "How do I safely remove the cylinder head cover?",
+      "expected_answer": "Use compressed air to blow off dirt first, disconnect camshaft position sensor, remove bolts (11 N·m), then remove cover.",
+      "relevant_chunk_ids": [
+        "9c8fab95-ea3f-77c1-ae79-5f1ae39edb07",
+        "4b47c198-ab11-ccae-3e5e-781c96555016"
+      ],
+      "notes": "Multi-chunk procedural. Tests linked-list traversal across adjacent chunks."
+    },
+
+    {
+      "id": "EV-015",
+      "language": "en",
+      "category": "diagnostic",
+      "topic": "engine_no_start",
+      "difficulty": "medium",
+      "query": "What are the possible causes if the engine does not start?",
+      "expected_answer": "Weak battery, corroded/loose connections, faulty starter, faulty coil or control unit, incorrect spark plug gap.",
+      "relevant_chunk_ids": ["b1469197-0c6e-ade1-2385-73ea413759c6"],
+      "notes": "Classic diagnostic table. Dense should match 'engine does not start' to 'ENGINE DOES NOT START' section."
+    },
+
+    {
+      "id": "EV-016",
+      "language": "en",
+      "category": "diagnostic",
+      "topic": "carbon_monoxide_hazard",
+      "difficulty": "easy",
+      "query": "What exhaust gas hazard should mechanics be aware of?",
+      "expected_answer": "Carbon monoxide (CO) — colorless, odorless, can cause unconsciousness and death.",
+      "relevant_chunk_ids": ["f811816f-8a03-3aec-41a1-104c17c49ebc"],
+      "notes": "Safety WARNING section. Tests retrieval of warning chunks specifically."
+    },
+
+    // ── 4 ELECTRICAL SECTION QUERIES ──────────────────────────
+
+    {
+      "id": "EV-017",
+      "language": "en",
+      "category": "diagnostic_electrical",
+      "topic": "dtc_overview",
+      "difficulty": "easy",
+      "query": "What are Diagnostic Trouble Codes (DTCs) and how should they be used?",
+      "expected_answer": "DTCs are hints for diagnosing malfunctions. Perform specific DTC diagnostic inspection to quickly and accurately diagnose.",
+      "relevant_chunk_ids": ["cc6e4063-d2d1-f4f5-2ad4-6ad153110473"],
+      "notes": "Conceptual electrical query. Dense retrieval on 'what are DTCs'."
+    },
+
+    {
+      "id": "EV-018",
+      "language": "en",
+      "category": "diagnostic_electrical",
+      "topic": "intermittent_dtc",
+      "difficulty": "medium",
+      "query": "How do you troubleshoot an intermittent DTC that is hard to reproduce?",
+      "expected_answer": "Check for loose connectors, monitor scan tool data, look for chafed or pierced wires.",
+      "relevant_chunk_ids": ["d6a4b411-d28f-bbcb-8991-4f25d4f0f7fb"],
+      "notes": "Electrical troubleshooting procedure. 'Intermittent' is the key semantic term."
+    },
+
+    {
+      "id": "EV-019",
+      "language": "en",
+      "category": "diagnostic_electrical",
+      "topic": "maf_sensor_dtc",
+      "difficulty": "medium",
+      "query": "What DTC is triggered by the Mass Air Flow sensor circuit high input?",
+      "expected_answer": "P0103 — Mass or Volume Air Flow Circuit High Input (1.8L engine).",
+      "relevant_chunk_ids": ["87c5fa4c-546b-e846-b598-fbc04034811d"],
+      "notes": "DTC code lookup. Tests sparse retrieval on 'P0103' and 'MAF' simultaneously."
+    },
+
+    {
+      "id": "EV-020",
+      "language": "en",
+      "category": "diagnostic_electrical",
+      "topic": "misfire_dtc",
+      "difficulty": "medium",
+      "query": "Which DTC codes indicate cylinder misfires for cylinders 2, 3, and 4?",
+      "expected_answer": "P0302 = Cylinder 2, P0303 = Cylinder 3, P0304 = Cylinder 4 Misfire Detected.",
+      "relevant_chunk_ids": ["93680ad8-06d1-9128-0b79-1191fc6707b8"],
+      "notes": "Multi-value DTC lookup. Tests sparse token matching on 'P0302', 'P0303', 'P0304'."
+    },
+
+    // ─────────────────────────────────────────────────────────
+    // BLOCK C: Arabic — Specifications (5 queries)
+    // Mix of MSA and Egyptian colloquial
+    // Target: same spec chunks as Block A — cross-lingual test
+    // ─────────────────────────────────────────────────────────
+
+    {
+      "id": "EV-021",
+      "language": "ar",
+      "category": "spec",
+      "topic": "engine_oil_pressure",
+      "difficulty": "easy",
+      "query": "ما هو ضغط زيت المحرك عند سرعة الخمول؟",
+      "query_translation": "What is the engine oil pressure at idle speed?",
+      "expected_answer": "1.2 - 1.5 بار عند 800 ± 50 دورة في الدقيقة",
+      "relevant_chunk_ids": ["e53006fd-7590-c882-6ba5-fef1923f37cf"],
+      "notes": "MSA Arabic. Cross-lingual test: same chunk as EV-001 but query is in Arabic. Tests BGE-M3 multilingual dense."
+    },
+
+    {
+      "id": "EV-022",
+      "language": "ar",
+      "category": "spec",
+      "topic": "cylinder_head_cover_bolt",
+      "difficulty": "easy",
+      "query": "ما هو عزم ربط مسامير غطاء رأس السيلندر؟",
+      "query_translation": "What is the torque for cylinder head cover bolts?",
+      "expected_answer": "11 نيوتن متر",
+      "relevant_chunk_ids": ["4b47c198-ab11-ccae-3e5e-781c96555016"],
+      "notes": "Formal Arabic torque spec. Same target as EV-004. Cross-lingual dense retrieval test."
+    },
+
+    {
+      "id": "EV-023",
+      "language": "ar_slang",
+      "category": "spec",
+      "topic": "crankshaft_timing_belt_pulley",
+      "difficulty": "hard",
+      "query": "عزم برغي بكرة الكاتينة بتاع الكرمنك كام؟",
+      "query_translation": "Torque for the timing belt pulley bolt of the crankshaft, how much? (Egyptian slang)",
+      "expected_answer": "130 نيوتن متر أولاً ثم 65 درجة إضافية",
+      "relevant_chunk_ids": ["d5ab9238-f5d8-684e-d4f6-40c684c143a2"],
+      "notes": "[HARD] Slang: 'الكاتينة'=timing belt, 'الكرمنك'=crankshaft. Core fine-tuning test case for Egyptian slang bridging."
+    },
+
+    {
+      "id": "EV-024",
+      "language": "ar_slang",
+      "category": "spec",
+      "topic": "throttle_body",
+      "difficulty": "medium",
+      "query": "بكام نربط براغي الثروتل بودي؟",
+      "query_translation": "How much torque for throttle body bolts? (Egyptian colloquial, 'ثروتل بودي' is direct loanword)",
+      "expected_answer": "11 نيوتن متر",
+      "relevant_chunk_ids": ["302b67a2-4f4a-0026-7a04-f8f9c4cc5616"],
+      "notes": "Slang uses 'ثروتل بودي' as a loanword. Tests sparse token matching on transliterated terms."
+    },
+
+    {
+      "id": "EV-025",
+      "language": "ar_slang",
+      "category": "spec",
+      "topic": "idler_pulley",
+      "difficulty": "medium",
+      "query": "البكرة اللي فوق بتاعة الإير كونديشن عزم ربطها قد ايه؟",
+      "query_translation": "The upper pulley for the air conditioning — what is its torque? (Egyptian colloquial, imprecise)",
+      "expected_answer": "برغي البكرة العلوية: 45 نيوتن متر",
+      "relevant_chunk_ids": ["dc729ffd-a211-8c1a-ea6a-93ebcf1bfefc"],
+      "notes": "[HARD] 'إير كونديشن' misidentifies the component (it's the accessory drive belt). Tests robustness to imprecise slang."
+    },
+
+    // ─────────────────────────────────────────────────────────
+    // BLOCK D: Arabic — Procedures & Diagnostics (5 queries)
+    // ─────────────────────────────────────────────────────────
+
+    {
+      "id": "EV-026",
+      "language": "ar",
+      "category": "procedural",
+      "topic": "air_cleaner_removal",
+      "difficulty": "easy",
+      "query": "كيف أقوم بتغيير فلتر الهواء في السيارة؟",
+      "query_translation": "How do I replace the air filter in the car?",
+      "expected_answer": "فك مسامير علبة فلتر الهواء الجانبية، إزالة الغطاء العلوي، استبدال العنصر، ثم إعادة التركيب.",
+      "relevant_chunk_ids": ["3d39e04b-a5f7-0254-4fa2-51d06453af86"],
+      "notes": "Simple procedure in MSA. Same chunk as EV-012. Cross-lingual procedural test."
+    },
+
+    {
+      "id": "EV-027",
+      "language": "ar_slang",
+      "category": "procedural",
+      "topic": "battery_disconnect",
+      "difficulty": "easy",
+      "query": "إيه أول حاجة بعملها قبل ما أفك أي حاجة في العربية؟",
+      "query_translation": "What is the first thing I do before removing anything in the car? (Egyptian colloquial)",
+      "expected_answer": "أفصل كابل البطارية السالب.",
+      "relevant_chunk_ids": ["5e925158-d94f-922f-cd0e-c548fb66df31"],
+      "notes": "General safety rule query. 'العربية'=car, 'أفك'=remove/disconnect. Dense semantic test."
+    },
+
+    {
+      "id": "EV-028",
+      "language": "ar_slang",
+      "category": "procedural",
+      "topic": "cylinder_head_cover_removal",
+      "difficulty": "medium",
+      "query": "ازاي أفك غطاء رأس الموتور بأمان؟",
+      "query_translation": "How do I safely remove the engine head cover? (Egyptian colloquial)",
+      "expected_answer": "نظف الغطاء بهواء مضغوط أولاً، أفصل حساس وضع العمود الرافع، فك البراغي بـ 11 نيوتن، ثم ارفع الغطاء.",
+      "relevant_chunk_ids": [
+        "9c8fab95-ea3f-77c1-ae79-5f1ae39edb07",
+        "4b47c198-ab11-ccae-3e5e-781c96555016"
+      ],
+      "notes": "Multi-chunk. 'الموتور'=engine, 'أفك'=remove. Arabic version of EV-014."
+    },
+
+    {
+      "id": "EV-029",
+      "language": "ar_slang",
+      "category": "diagnostic",
+      "topic": "engine_no_start",
+      "difficulty": "medium",
+      "query": "الموتور مش بيشتغل — إيه الأسباب الممكنة؟",
+      "query_translation": "The engine won't start — what are the possible causes? (Egyptian colloquial)",
+      "expected_answer": "بطارية ضعيفة، وصلات مفككة أو صدئة، سلف معطل، بوبينة أو وحدة تحكم معطلة، مسافة بواجي غلط.",
+      "relevant_chunk_ids": ["b1469197-0c6e-ade1-2385-73ea413759c6"],
+      "notes": "Slang: 'مش بيشتغل'=not working/starting, 'بواجي'=spark plugs. Tests Egyptian→English semantic bridging."
+    },
+
+    {
+      "id": "EV-030",
+      "language": "ar_slang",
+      "category": "diagnostic_electrical",
+      "topic": "maf_sensor_dtc",
+      "difficulty": "hard",
+      "query": "في كود خطأ بيجي من حساس كمية الهواء — إيه الكود ده؟",
+      "query_translation": "There is an error code coming from the air quantity sensor — what is that code? (Egyptian slang)",
+      "expected_answer": "P0103 — دائرة حساس تدفق الهواء مرتفعة الإدخال (موتور 1.8L)",
+      "relevant_chunk_ids": ["87c5fa4c-546b-e846-b598-fbc04034811d"],
+      "notes": "[HARD] 'حساس كمية الهواء'=MAF sensor (informal). Tests Arabic description→English DTC chunk retrieval."
+    }
+
+  ]
+}
