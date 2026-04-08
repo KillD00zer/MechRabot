@@ -21,9 +21,9 @@ from collections import defaultdict
 # ============================================================
 # CONFIG
 # ============================================================
-CHUNKS_PATH   = "/mnt/78AA22ECAA22A71A/K_REPO/MechRabot/main_work/chunks.json"
-DOC_PATH      = "main_work/output_V3_fullresult.json"
-OUTPUT_PATH   = "final_chunks_v2.json"
+CHUNKS_PATH   = "/mnt/78AA22ECAA22A71A/K_REPO/MechRabot/main_work/data/processed/chunks.json"
+DOC_PATH      = "/mnt/78AA22ECAA22A71A/K_REPO/MechRabot/main_work/data/raw/output_V3_fullresult.json"
+OUTPUT_PATH   = "/mnt/78AA22ECAA22A71A/K_REPO/MechRabot/main_work/data/processed/final_chunks_v2.json"
 
 SPEC_UNITS    = re.compile(r'\b(\d+\.?\d*)\s*(N·m|Nm|mm|bar|kPa|MPa|°|%)\b')
 IMG_CODE      = re.compile(r'\b[A-Z]{2,6}\d{5,}[A-Z]?\b')

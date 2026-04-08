@@ -19,12 +19,6 @@
 
   "queries": [
 
-    // ─────────────────────────────────────────────────────────
-    // BLOCK A: English — Specifications (10 queries)
-    // Tests: sparse retrieval on numbers/units, dense on
-    //        semantic paraphrasing of spec names
-    // ─────────────────────────────────────────────────────────
-
     {
       "id": "EV-001",
       "language": "en",
@@ -145,11 +139,6 @@
       "notes": "Procedural spec hybrid. Tests dense retrieval on 'align tensioner finger pointer'."
     },
 
-    // ─────────────────────────────────────────────────────────
-    // BLOCK B: English — Procedures & Diagnostics (10 queries)
-    //          4 of these are from the Electrical section (EV-017 to EV-020)
-    // ─────────────────────────────────────────────────────────
-
     {
       "id": "EV-011",
       "language": "en",
@@ -225,8 +214,6 @@
       "notes": "Safety WARNING section. Tests retrieval of warning chunks specifically."
     },
 
-    // ── 4 ELECTRICAL SECTION QUERIES ──────────────────────────
-
     {
       "id": "EV-017",
       "language": "en",
@@ -274,12 +261,6 @@
       "relevant_chunk_ids": ["93680ad8-06d1-9128-0b79-1191fc6707b8"],
       "notes": "Multi-value DTC lookup. Tests sparse token matching on 'P0302', 'P0303', 'P0304'."
     },
-
-    // ─────────────────────────────────────────────────────────
-    // BLOCK C: Arabic — Specifications (5 queries)
-    // Mix of MSA and Egyptian colloquial
-    // Target: same spec chunks as Block A — cross-lingual test
-    // ─────────────────────────────────────────────────────────
 
     {
       "id": "EV-021",
@@ -345,10 +326,6 @@
       "relevant_chunk_ids": ["dc729ffd-a211-8c1a-ea6a-93ebcf1bfefc"],
       "notes": "[HARD] 'إير كونديشن' misidentifies the component (it's the accessory drive belt). Tests robustness to imprecise slang."
     },
-
-    // ─────────────────────────────────────────────────────────
-    // BLOCK D: Arabic — Procedures & Diagnostics (5 queries)
-    // ─────────────────────────────────────────────────────────
 
     {
       "id": "EV-026",
