@@ -25,8 +25,10 @@ reports/
 │   └── kaggle_to_qdrant_transport.md             ← how to move embeddings from Kaggle to Qdrant
 │
 └── 05_evaluation/
-    ├── eval_dataset.json                          ← 30 grounded queries (EN + AR + mixed)
-    └── README.md                                  ← how to run retrieval evaluation
+    ├── README.md                                  ← metrics theory, dataset structure, learning path
+    ├── evaluation_30_V1.json                      ← 30 grounded queries (EN + AR + ar_slang)
+    ├── retrieval_evaluation_learning_guide.md     ← 📚 cell-by-cell guide of the original notebook
+    └── mathimatical-retreival-evaluation.ipynb   ← 🔬 original notebook (manual math, for study)
 ```
 
 ---
@@ -59,13 +61,25 @@ reports/
 |:---|:---|
 | `kaggle_to_qdrant_transport.md` | Three strategies (JSON, binary files, direct streaming) compared before/during/after |
 
+### 05 — Evaluation
+
+| File | What it covers |
+|:---|:---|
+| `README.md` | Metrics theory (MRR, NDCG, Recall), dataset structure, thresholds, learning path |
+| `evaluation_30_V1.json` | 30 labeled queries — the ground truth qrels file |
+| `retrieval_evaluation_learning_guide.md` | Cell-by-cell explanation of the evaluation notebook with worked math examples |
+| `mathimatical-retreival-evaluation.ipynb` | Original evaluation notebook — pure math, no libs — use for learning |
+
 ---
 
-## 🛠️ Related Scripts (`main_work/`)
+## 🛠️ Related Notebooks (`main_work/`)
 
-| Script | Purpose |
+| Notebook / Script | Purpose |
 |:---|:---|
+| `retrieval-evaluation-ranx.ipynb` | **Production evaluation** — uses `ranx` library, 30+ metrics, cleaner code |
 | `encode_and_inject.py` | **Recommended** — encode + inject to Qdrant in one loop, no files needed |
 | `save_embeddings.py` | Save all three vector types to binary files (checkpoint for large datasets) |
 | `inject_to_qdrant.py` | Load saved binary files and inject into Qdrant (local / cloud / memory) |
+| `build_final_chunks_v2.py` | Build `final_chunks_v2.json` from Docling output |
+
 | `build_final_chunks_v2.py` | Build `final_chunks_v2.json` from Docling output |

@@ -201,9 +201,37 @@ qrels   = {"EV-001": {"e53006fd-7590-c882-6ba5-fef1923f37cf": 1}, ...}
 
 | File | Description |
 |---|---|
-| `evaluation_30_V1.json` | The full labeled evaluation dataset (this file) |
-| `eval_dataset.json` | Earlier draft — kept for reference |
-| `README.md` | This file |
+| `evaluation_30_V1.json` | The full labeled evaluation dataset — ground truth qrels |
+| `README.md` | This file — metrics theory + dataset structure |
+| `retrieval_evaluation_learning_guide.md` | 📚 Full cell-by-cell learning guide of the original notebook |
+| `mathimatical-retreival-evaluation.ipynb` | 🔬 Original evaluation notebook (pure manual math, no libs) — for study |
+
+---
+
+## 🗺️ Learning Path (Start Here)
+
+If you are new to retrieval evaluation, follow this order:
+
+```
+1. READ   → README.md (this file)
+              ↳ understand qrels format, metrics theory, thresholds
+
+2. READ   → retrieval_evaluation_learning_guide.md
+              ↳ full cell-by-cell breakdown of every decision in the original notebook
+              ↳ includes worked math examples for MRR, NDCG, Recall
+
+3. STUDY  → mathimatical-retreival-evaluation.ipynb
+              ↳ the original notebook — manually implements everything from scratch
+              ↳ best for learning: you see the raw math in Python
+
+4. RUN    → main_work/retrieval-evaluation-ranx.ipynb
+              ↳ the production notebook — uses ranx library instead of manual math
+              ↳ faster, cleaner, more metrics — use this for actual evaluation runs
+```
+
+> **Why two notebooks?**
+> `mathimatical-retreival-evaluation.ipynb` is a **learning artifact** — it deliberately avoids libraries so you understand the math.
+> `retrieval-evaluation-ranx.ipynb` is the **production tool** — use `ranx` for real evaluation runs.
 
 ---
 
