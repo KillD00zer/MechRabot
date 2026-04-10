@@ -17,9 +17,60 @@
 
 <br/>
 
-[About](#-about) • [Architecture](#-architecture) • [Data Pipeline](#-data-pipeline) • [Embedding Strategy](#-embedding--fine-tuning-strategy) • [Getting Started](#-getting-started)
+[Why This Matters](#-why-this-project-matters) • [About](#-about) • [Architecture](#-architecture) • [Data Pipeline](#-data-pipeline) • [Embedding Strategy](#-embedding--fine-tuning-strategy) • [Getting Started](#-getting-started)
 
 </div>
+
+---
+
+## 💡 Why This Project Matters
+
+### The Problem Nobody Talks About
+
+Every day, thousands of automotive technicians across the Middle East face the same invisible bottleneck:
+
+```
+Mechanic encounters error code P0103
+    ↓
+Opens a 500-page English PDF on a dusty laptop
+    ↓
+Ctrl+F "حساس الهواء" → Zero results (manual says "Mass Air Flow Sensor")
+    ↓
+Scrolls through wrong sections for 30+ minutes
+    ↓
+Calls a senior technician who "just knows where it is"
+    ↓
+That senior retired last month. Knowledge lost forever.
+```
+
+**This is not hypothetical.** Studies show technicians spend **30 minutes to 2 hours per task** just *finding* the right page — not fixing the car. In a busy shop, that's **hundreds of billable hours wasted per year** on searching, not repairing.
+
+### Why ChatGPT Alone Can't Fix This
+
+| Challenge | ChatGPT / Generic LLM | MechRabot |
+|---|---|---|
+| "عزم الكاتينة كام؟" (Egyptian slang for timing belt torque) | ❌ Hallucinates a number | ✅ Returns exact spec: 130 N·m + 65° |
+| Torque: 10.5 Nm vs 10 Nm | ❌ Treats them as "similar" | ✅ Sparse search catches the exact number |
+| "Where is this spec in the manual?" | ❌ No source citation | ✅ Page 35, Section: General Information, with diagram |
+| 500-page PDF context window | ❌ Truncates or loses context | ✅ 2,790 precision chunks, each with full hierarchy |
+
+### The Market Is Real
+
+- The global **RAG market** reached **~$2 billion** in 2025, growing at **38-50% CAGR**
+- Companies deploying AI-powered documentation search report **35-75% reduction** in information retrieval time
+- The automotive repair industry alone is worth **$800B+ globally** — and the documentation layer is still stuck in static PDFs
+- **Zero commercial tools** exist that bridge **Egyptian Arabic mechanical slang** → **English technical manuals**
+
+### What Makes MechRabot Unique
+
+```
+  "الكاتينة بتاع الكرمنك"        "timing belt pulley bolt"        "130 N·m + 65°"
+         ↑                                ↑                              ↑
+   Egyptian Slang                  English Manual Chunk              Exact Spec
+   (fine-tuned BGE-M3)             (2,790 enriched chunks)          (verified answer)
+```
+
+This **three-way bridge** — colloquial Arabic → formal English → precise mechanical spec — does not exist in any commercial product today. Not in ChatGPT, not in Google, not in any shop management software.
 
 ---
 
