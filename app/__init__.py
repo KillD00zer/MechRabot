@@ -1,0 +1,1 @@
+"""MechRabot app package."""

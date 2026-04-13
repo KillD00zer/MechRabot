@@ -1,0 +1,13 @@
+# MechRabot — local dev requirements
+# For Modal deployment, dependencies are installed via modal_app.py image
+
+FlagEmbedding
+qdrant-client
+haystack-ai
+torch
+accelerate
+google-generativeai
+gradio
+requests
+python-dotenv       # for loading .env locally
+modal               # CLI only — for modal serve / modal deploy
