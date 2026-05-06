@@ -5,6 +5,7 @@ ChatPromptBuilder → LLM → refined query (text) → embedder
 
 from haystack.components.builders import ChatPromptBuilder
 from haystack.dataclasses import ChatMessage
+from haystack_integrations.components.generators.google_ai import GoogleAIGeminiChatGenerator
 
 
 translator_refiner_template = [ChatMessage.from_user(
@@ -24,3 +25,8 @@ Return only the refined English query, nothing else.\
 )]
 
 refiner_prompt_builder = ChatPromptBuilder(template=translator_refiner_template)
+
+gemini_refiner_agent = GoogleAIGeminiChatGenerator(
+    model="gemini-1.5-flash",
+    generation_config={"temperature": 0.2},
+)

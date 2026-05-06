@@ -6,6 +6,7 @@ Receives: original query + 5 retrieved document chunks with metadata
 
 from haystack.components.builders import ChatPromptBuilder
 from haystack.dataclasses import ChatMessage
+from haystack_integrations.components.generators.google_ai import GoogleAIGeminiChatGenerator
 
 
 generator_template = [ChatMessage.from_user(
@@ -51,3 +52,11 @@ Answer:\
 )]
 
 generator_prompt_builder = ChatPromptBuilder(template=generator_template)
+
+
+gemini_generator_agent = GoogleAIGeminiChatGenerator(
+    model="gemini-2.5-pro-preview-05-06",
+    generation_config={
+        "temperature": 0.4,
+    }
+)
