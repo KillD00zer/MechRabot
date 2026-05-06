@@ -4,7 +4,6 @@ Serves the Haystack pipeline on a T4 GPU as a web endpoint.
 """
 
 import modal
-from app.config import MODAL_APP_NAME, MODAL_GPU
 
 # ── Container image ─────────────────────────────────────────────────────────
 image = (
@@ -20,12 +19,12 @@ image = (
     )
 )
 
-app = modal.App(MODAL_APP_NAME, image=image)
+app = modal.App("mechrabot", image=image)
 
 
 # ── GPU Service ─────────────────────────────────────────────────────────────
 @app.cls(
-    gpu=MODAL_GPU,
+    gpu="T4",
     secrets=[
         modal.Secret.from_name("google-gen-api-mechrabot"),   # GEMINI_API_KEY
         modal.Secret.from_name("qdrant-secret-mechrabot"),    # QDRANT_URL, QDRANT_PORT, QDRANT_API_KEY
@@ -69,7 +68,7 @@ class MechRabotService:
         modal.Secret.from_name("qdrant-secret-mechrabot"),
     ],
 )
-@modal.web_endpoint(method="POST")
+@modal.fastapi_endpoint(method="POST")
 def query_endpoint(request: dict) -> dict:
     """
     POST {"query": "your question"}
@@ -77,3 +76,11 @@ def query_endpoint(request: dict) -> dict:
     """
     service = MechRabotService()
     return service.query.remote(request["query"])
+
+
+# ── Test Entrypoint ─────────────────────────────────────────────────────────
+@app.local_entrypoint()
+def test(text: str = "What is the torque for cylinder head cover bolts?"):
+    service = MechRabotService()
+    result = service.query.remote(text)
+    print(result["answer"])

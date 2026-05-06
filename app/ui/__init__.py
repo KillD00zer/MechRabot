@@ -1,1 +1,0 @@
-"""MechRabot UI package."""

@@ -8,12 +8,12 @@ Flow:
 
 from haystack import Pipeline
 from qdrant_client import QdrantClient
+import os
 
 from app.core.prompt_refiner import refiner_prompt_builder, gemini_refiner_agent
 from app.core.prompt_generator import generator_prompt_builder, gemini_generator_agent
 from app.core.embedder import MechRabotEmbedder
 from app.core.retriever import MechRabotRetriever
-from app.config import QDRANT_URL, QDRANT_API_KEY, QDRANT_COLLECTION
 
 
 def build_pipeline() -> Pipeline:
@@ -36,9 +36,10 @@ def build_pipeline() -> Pipeline:
     pipe.add_component("embedder", MechRabotEmbedder())
 
     # ── 3. Retriever: Qdrant hybrid search ────────────────────────────
-    client = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY)
+    qdrant_url = os.environ["QDRANT_URL"] + ":" + os.environ["QDRANT_PORT"]
+    client = QdrantClient(url=qdrant_url, api_key=os.environ["QDRANT_API_KEY"])
     pipe.add_component("retriever", MechRabotRetriever(
-        client=client, col_name=QDRANT_COLLECTION,
+        client=client, col_name="mechrabot_Vdb_1",
     ))
 
     # ── 4. Generator: final answer ────────────────────────────────────

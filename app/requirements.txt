@@ -4,10 +4,11 @@
 FlagEmbedding
 qdrant-client
 haystack-ai
+google-ai-haystack      # GoogleAIGeminiChatGenerator
 torch
 accelerate
 google-generativeai
 gradio
 requests
-python-dotenv       # for loading .env locally
-modal               # CLI only — for modal serve / modal deploy
+python-dotenv           # for loading .env locally
+modal                   # CLI only — for modal serve / modal deploy
