@@ -1,20 +1,19 @@
 """
-Phase 5 — Modal App Entry Point
-Serves the MechRabot pipeline on a T4 GPU as a web endpoint.
-
-TODO: implement in Phase 5 after pipeline is tested locally
+MechRabot — Modal App
+Serves the Haystack pipeline on a T4 GPU as a web endpoint.
 """
 
 import modal
 from app.config import MODAL_APP_NAME, MODAL_GPU
 
-# ── Container image — all dependencies installed here ──────────────────────
+# ── Container image ─────────────────────────────────────────────────────────
 image = (
     modal.Image.debian_slim(python_version="3.11")
     .pip_install(
         "FlagEmbedding",
         "qdrant-client",
         "haystack-ai",
+        "google-ai-haystack",
         "torch",
         "accelerate",
         "google-generativeai",
@@ -24,28 +23,57 @@ image = (
 app = modal.App(MODAL_APP_NAME, image=image)
 
 
-# ── GPU Service Class ───────────────────────────────────────────────────────
-@app.cls(gpu=MODAL_GPU)
+# ── GPU Service ─────────────────────────────────────────────────────────────
+@app.cls(
+    gpu=MODAL_GPU,
+    secrets=[
+        modal.Secret.from_name("google-gen-api-mechrabot"),   # GEMINI_API_KEY
+        modal.Secret.from_name("qdrant-secret-mechrabot"),    # QDRANT_URL, QDRANT_PORT, QDRANT_API_KEY
+    ],
+)
 class MechRabotService:
 
     @modal.enter()
     def setup(self):
-        # Phase 5: build_pipeline() goes here — runs ONCE per container
-        raise NotImplementedError("Phase 5 — not implemented yet")
+        from app.core.pipeline import build_pipeline
+        self.pipe = build_pipeline()
 
     @modal.method()
     def query(self, text: str) -> dict:
-        # Phase 5: pipe.run() goes here
-        raise NotImplementedError("Phase 5 — not implemented yet")
+        result = self.pipe.run({
+            "refiner_prompt":   {"query": text},
+            "generator_prompt": {"query": text},
+        })
+
+        answer = result["generator_llm"]["replies"][0].text
+        documents = result["retriever"]["documents"]
+
+        sources = []
+        for doc in documents:
+            sources.append({
+                "chunk_id": doc.id,
+                "score": doc.score,
+                "page_no": doc.meta.get("page_no"),
+                "source_file": doc.meta.get("source_file"),
+                "section_path": doc.meta.get("section_path"),
+                "linked_images": doc.meta.get("linked_images", []),
+            })
+
+        return {"answer": answer, "sources": sources}
 
 
 # ── Web Endpoint ────────────────────────────────────────────────────────────
-@app.function()
+@app.function(
+    secrets=[
+        modal.Secret.from_name("google-gen-api-mechrabot"),
+        modal.Secret.from_name("qdrant-secret-mechrabot"),
+    ],
+)
 @modal.web_endpoint(method="POST")
 def query_endpoint(request: dict) -> dict:
     """
     POST {"query": "your question"}
     Returns {"answer": "...", "sources": [...]}
     """
-    # Phase 5: MechRabotService().query.remote(request["query"])
-    raise NotImplementedError("Phase 5 — not implemented yet")
+    service = MechRabotService()
+    return service.query.remote(request["query"])

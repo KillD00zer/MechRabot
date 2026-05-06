@@ -7,7 +7,9 @@ so they work both locally (.env) and on Modal (Modal Secrets).
 import os
 
 # ── Qdrant ─────────────────────────────────────────────────────────────────
-QDRANT_URL        = os.environ.get("QDRANT_URL", "")
+_qdrant_url       = os.environ.get("QDRANT_URL", "")
+_qdrant_port      = os.environ.get("QDRANT_PORT", "")
+QDRANT_URL        = f"{_qdrant_url}:{_qdrant_port}" if _qdrant_port else _qdrant_url
 QDRANT_API_KEY    = os.environ.get("QDRANT_API_KEY", "")
 QDRANT_COLLECTION = "mechrabot_Vdb_1"
 
