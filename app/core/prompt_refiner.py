@@ -5,7 +5,7 @@ ChatPromptBuilder → LLM → refined query (text) → embedder
 
 from haystack.components.builders import ChatPromptBuilder
 from haystack.dataclasses import ChatMessage
-from haystack_integrations.components.generators.google_ai import GoogleGenAIChatGenerator
+from haystack_integrations.components.generators.google_genai import GoogleGenAIChatGenerator
 
 
 translator_refiner_template = [ChatMessage.from_user(
