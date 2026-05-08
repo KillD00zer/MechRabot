@@ -10,10 +10,12 @@ from haystack import Pipeline
 from qdrant_client import QdrantClient
 import os
 
-from app.core.prompt_refiner import refiner_prompt_builder, gemini_refiner_agent
-from app.core.prompt_generator import generator_prompt_builder, gemini_generator_agent
+from app.core.prompt_refiner import translator_refiner_template
+from app.core.prompt_generator import generator_template
 from app.core.embedder import MechRabotEmbedder
 from app.core.retriever import MechRabotRetriever
+from haystack.components.builders import ChatPromptBuilder
+from haystack_integrations.components.generators.google_ai import GoogleAIGeminiChatGenerator
 
 
 def build_pipeline() -> Pipeline:
@@ -22,15 +24,14 @@ def build_pipeline() -> Pipeline:
 
     Usage:
         pipe = build_pipeline()
-        result = pipe.run({"refiner_prompt_builder": {"query": "your question here"},
-                           "generator_prompt": {"query": "your question here"}})
+        result = pipe.run({"refiner_prompt": {"query": "your question here"}})
         print(result["generator_llm"]["replies"][0].text)
     """
     pipe = Pipeline()
 
     # ── 1. Refiner: translate + refine the query ──────────────────────
-    pipe.add_component("refiner_prompt", refiner_prompt_builder)
-    pipe.add_component("refiner_llm", gemini_refiner_agent)
+    pipe.add_component("refiner_prompt", ChatPromptBuilder(template=translator_refiner_template))
+    pipe.add_component("refiner_llm",   GoogleAIGeminiChatGenerator(model="gemini-1.5-flash", generation_config={"temperature": 0.2}))
 
     # ── 2. Embedder: BGE-M3 → sparse + dense + colbert ───────────────
     pipe.add_component("embedder", MechRabotEmbedder())
@@ -42,8 +43,8 @@ def build_pipeline() -> Pipeline:
     ))
 
     # ── 4. Generator: final answer ────────────────────────────────────
-    pipe.add_component("generator_prompt", generator_prompt_builder)
-    pipe.add_component("generator_llm", gemini_generator_agent)
+    pipe.add_component("generator_prompt", ChatPromptBuilder(template=generator_template))
+    pipe.add_component("generator_llm",   GoogleAIGeminiChatGenerator(model="gemini-2.5-pro-preview-05-06", generation_config={"temperature": 0.1}))
 
     # ── Connections ───────────────────────────────────────────────────
     pipe.connect("refiner_prompt.prompt", "refiner_llm.messages")
@@ -52,6 +53,7 @@ def build_pipeline() -> Pipeline:
     pipe.connect("embedder.dense_list",   "retriever.dense_list")
     pipe.connect("embedder.colbert_list", "retriever.colbert_list")
     pipe.connect("retriever.documents",   "generator_prompt.documents")
+    pipe.connect("refiner_llm.replies",   "generator_prompt.query")
     pipe.connect("generator_prompt.prompt", "generator_llm.messages")
 
     return pipe
