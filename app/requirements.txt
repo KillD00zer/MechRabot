@@ -4,10 +4,9 @@
 FlagEmbedding
 qdrant-client
 haystack-ai
-google-ai-haystack      # GoogleAIGeminiChatGenerator
+google-genai-haystack   # GoogleGenAIChatGenerator (new google.genai SDK)
 torch
 accelerate
-google-generativeai
 gradio
 requests
 python-dotenv           # for loading .env locally

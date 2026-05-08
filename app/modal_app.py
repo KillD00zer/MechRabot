@@ -12,10 +12,9 @@ image = (
         "FlagEmbedding",
         "qdrant-client",
         "haystack-ai",
-        "google-ai-haystack",
+        "google-genai-haystack",
         "torch",
         "accelerate",
-        "google-generativeai",
     )
 )
 
