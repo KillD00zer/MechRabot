@@ -31,6 +31,8 @@ Rules:
 - Be clear and practical — you're talking to a mechanic
 - At the end of your answer, add a "📎 Sources" section listing which chunks you used
 
+crucial: never ever generate the answer by ur self , make it from the documents you were given or say you dont have enough infos.
+
 User query: {{ query }}
 
 Retrieved chunks:
@@ -57,6 +59,6 @@ generator_prompt_builder = ChatPromptBuilder(template=generator_template)
 gemini_generator_agent = GoogleAIGeminiChatGenerator(
     model="gemini-2.5-pro-preview-05-06",
     generation_config={
-        "temperature": 0.4,
+        "temperature": 0.1,
     }
 )

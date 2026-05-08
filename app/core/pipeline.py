@@ -22,7 +22,7 @@ def build_pipeline() -> Pipeline:
 
     Usage:
         pipe = build_pipeline()
-        result = pipe.run({"refiner_prompt": {"query": "your question here"},
+        result = pipe.run({"refiner_prompt_builder": {"query": "your question here"},
                            "generator_prompt": {"query": "your question here"}})
         print(result["generator_llm"]["replies"][0].text)
     """
@@ -36,8 +36,7 @@ def build_pipeline() -> Pipeline:
     pipe.add_component("embedder", MechRabotEmbedder())
 
     # ── 3. Retriever: Qdrant hybrid search ────────────────────────────
-    qdrant_url = os.environ["QDRANT_URL"] + ":" + os.environ["QDRANT_PORT"]
-    client = QdrantClient(url=qdrant_url, api_key=os.environ["QDRANT_API_KEY"])
+    client = QdrantClient(url=os.environ["QDRANT_URL"], api_key=os.environ["QDRANT_API_KEY"])
     pipe.add_component("retriever", MechRabotRetriever(
         client=client, col_name="mechrabot_Vdb_1",
     ))

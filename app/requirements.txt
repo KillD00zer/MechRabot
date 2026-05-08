@@ -12,3 +12,4 @@ gradio
 requests
 python-dotenv           # for loading .env locally
 modal                   # CLI only — for modal serve / modal deploy
+fastapi[standard]

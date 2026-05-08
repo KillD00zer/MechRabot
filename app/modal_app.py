@@ -16,7 +16,9 @@ image = (
         "torch",
         "accelerate",
         "google-generativeai",
+        "fastapi[standard]"
     )
+    .add_local_python_source("app")  # bundle app/core/ into the container image
 )
 
 app = modal.App("mechrabot", image=image)
@@ -24,7 +26,6 @@ app = modal.App("mechrabot", image=image)
 
 # ── GPU Service ─────────────────────────────────────────────────────────────
 @app.cls(
-    gpu="T4",
     secrets=[
         modal.Secret.from_name("google-gen-api-mechrabot"),   # GEMINI_API_KEY
         modal.Secret.from_name("qdrant-secret-mechrabot"),    # QDRANT_URL, QDRANT_PORT, QDRANT_API_KEY
