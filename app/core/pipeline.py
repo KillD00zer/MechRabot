@@ -7,11 +7,13 @@ Flow:
 """
 
 from haystack import Pipeline
+from haystack.components.builders import ChatPromptBuilder
+from haystack_integrations.components.generators.google_genai import GoogleGenAIChatGenerator
 from qdrant_client import QdrantClient
 import os
 
-from app.core.prompt_refiner import refiner_prompt_builder, gemini_refiner_agent
-from app.core.prompt_generator import generator_prompt_builder, gemini_generator_agent
+from app.core.prompt_refiner import translator_refiner_template
+from app.core.prompt_generator import generator_template
 from app.core.embedder import MechRabotEmbedder
 from app.core.retriever import MechRabotRetriever
 
@@ -19,18 +21,19 @@ from app.core.retriever import MechRabotRetriever
 def build_pipeline() -> Pipeline:
     """
     Factory function — returns a fully wired MechRabot pipeline.
+    Each call creates fresh component instances (required by Haystack).
 
     Usage:
         pipe = build_pipeline()
-        result = pipe.run({"refiner_prompt_builder": {"query": "your question here"},
+        result = pipe.run({"refiner_prompt": {"query": "your question here"},
                            "generator_prompt": {"query": "your question here"}})
         print(result["generator_llm"]["replies"][0].text)
     """
     pipe = Pipeline()
 
     # ── 1. Refiner: translate + refine the query ──────────────────────
-    pipe.add_component("refiner_prompt", refiner_prompt_builder)
-    pipe.add_component("refiner_llm", gemini_refiner_agent)
+    pipe.add_component("refiner_prompt", ChatPromptBuilder(template=translator_refiner_template))
+    pipe.add_component("refiner_llm", GoogleGenAIChatGenerator(model="gemini-2.0-flash"))
 
     # ── 2. Embedder: BGE-M3 → sparse + dense + colbert ───────────────
     pipe.add_component("embedder", MechRabotEmbedder())
@@ -42,8 +45,8 @@ def build_pipeline() -> Pipeline:
     ))
 
     # ── 4. Generator: final answer ────────────────────────────────────
-    pipe.add_component("generator_prompt", generator_prompt_builder)
-    pipe.add_component("generator_llm", gemini_generator_agent)
+    pipe.add_component("generator_prompt", ChatPromptBuilder(template=generator_template))
+    pipe.add_component("generator_llm", GoogleGenAIChatGenerator(model="gemini-2.5-pro-preview-05-06"))
 
     # ── Connections ───────────────────────────────────────────────────
     pipe.connect("refiner_prompt.prompt", "refiner_llm.messages")
