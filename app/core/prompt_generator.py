@@ -56,7 +56,4 @@ generator_prompt_builder = ChatPromptBuilder(template=generator_template)
 
 gemini_generator_agent = GoogleGenAIChatGenerator(
     model="gemini-2.5-pro-preview-05-06",
-    generation_config={
-        "temperature": 0.4,
-    }
 )

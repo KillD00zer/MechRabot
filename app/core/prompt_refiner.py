@@ -28,5 +28,4 @@ refiner_prompt_builder = ChatPromptBuilder(template=translator_refiner_template)
 
 gemini_refiner_agent = GoogleGenAIChatGenerator(
     model="gemini-2.0-flash",
-    generation_config={"temperature": 0.2},
 )
