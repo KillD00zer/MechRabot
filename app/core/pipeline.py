@@ -8,7 +8,8 @@ Flow:
 
 from haystack import Pipeline
 from haystack.components.builders import ChatPromptBuilder
-from haystack_integrations.components.generators.google_genai import GoogleGenAIChatGenerator
+from haystack.components.generators.chat import OpenAIChatGenerator
+from haystack.utils import Secret
 from qdrant_client import QdrantClient
 import os
 
@@ -32,8 +33,13 @@ def build_pipeline() -> Pipeline:
     pipe = Pipeline()
 
     # ── 1. Refiner: translate + refine the query ──────────────────────
-    pipe.add_component("refiner_prompt", ChatPromptBuilder(template=translator_refiner_template))
-    pipe.add_component("refiner_llm", GoogleGenAIChatGenerator(model="gemini-2.0-flash"))
+    pipe.add_component("refiner_prompt", ChatPromptBuilder(template=translator_refiner_template, required_variables=["query"]))
+    pipe.add_component("refiner_llm", OpenAIChatGenerator(
+        model="deepseek-v4-flash",
+        api_key=Secret.from_env_var("deepseek_APi"),
+        api_base_url="https://api.deepseek.com",
+        generation_kwargs={"temperature": 0.2},
+    ))
 
     # ── 2. Embedder: BGE-M3 → sparse + dense + colbert ───────────────
     pipe.add_component("embedder", MechRabotEmbedder())
@@ -45,8 +51,13 @@ def build_pipeline() -> Pipeline:
     ))
 
     # ── 4. Generator: final answer ────────────────────────────────────
-    pipe.add_component("generator_prompt", ChatPromptBuilder(template=generator_template))
-    pipe.add_component("generator_llm", GoogleGenAIChatGenerator(model="gemini-2.5-pro-preview-05-06"))
+    pipe.add_component("generator_prompt", ChatPromptBuilder(template=generator_template, required_variables=["documents", "query"]))
+    pipe.add_component("generator_llm", OpenAIChatGenerator(
+        model="deepseek-v4-flash",
+        api_key=Secret.from_env_var("deepseek_APi"),
+        api_base_url="https://api.deepseek.com",
+        generation_kwargs={"temperature": 0.4},
+    ))
 
     # ── Connections ───────────────────────────────────────────────────
     pipe.connect("refiner_prompt.prompt", "refiner_llm.messages")

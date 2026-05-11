@@ -3,7 +3,7 @@ MechRabotEmbedder — Haystack component
 """
 
 from haystack import component
-from typing import Dict, List
+from typing import Dict, List, Any
 from FlagEmbedding import BGEM3FlagModel
 
 
@@ -17,10 +17,15 @@ class MechRabotEmbedder:
         self.max_length = max_length
 
     @component.output_types(sparse_dict=dict, dense_list=list, colbert_list=list)
-    def run(self, query: str):
+    def run(self, query: Any):
+        
+        # Extract text if query is a list of ChatMessage objects
+        if isinstance(query, list):
+            query = query[0].text
 
+        # Always pass as a list so the model returns consistent dictionaries
         embedding_docu = self.model.encode(
-            query,
+            [query],
             return_dense=True,
             return_sparse=True,
             return_colbert_vecs=True,

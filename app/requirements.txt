@@ -4,10 +4,10 @@
 FlagEmbedding
 qdrant-client
 haystack-ai
-google-genai-haystack   # GoogleGenAIChatGenerator (new google.genai SDK)
 torch
 accelerate
 gradio
 requests
 python-dotenv           # for loading .env locally
 modal                   # CLI only — for modal serve / modal deploy
+fastapi[standard]

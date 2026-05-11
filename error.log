@@ -1,0 +1,3 @@
+✓ Initialized. View run at 
+https://modal.com/apps/killd00zer/main/ap-iFG59fVOVfZ0FoexRg8LzT
+Stopping app - uncaught exception raised locally: NotFoundError("Secret 'deepseek-secret' not found in environment 'main'. You can create it here: https://modal.com/secrets/killd00zer/main/create?secret_name=deepseek-secret").

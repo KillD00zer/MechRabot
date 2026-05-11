@@ -12,10 +12,11 @@ image = (
         "FlagEmbedding",
         "qdrant-client",
         "haystack-ai",
-        "google-genai-haystack",
         "torch",
         "accelerate",
+        "fastapi[standard]",
     )
+    .add_local_python_source("app")
 )
 
 app = modal.App("mechrabot", image=image)
@@ -25,8 +26,8 @@ app = modal.App("mechrabot", image=image)
 @app.cls(
     gpu="T4",
     secrets=[
-        modal.Secret.from_name("google-gen-api-mechrabot"),   # GEMINI_API_KEY
-        modal.Secret.from_name("qdrant-secret-mechrabot"),    # QDRANT_URL, QDRANT_PORT, QDRANT_API_KEY
+        modal.Secret.from_name("qdrant-secret-mechrabot"),
+        modal.Secret.from_name("deepseek_APi")
     ],
 )
 class MechRabotService:
@@ -41,7 +42,7 @@ class MechRabotService:
         result = self.pipe.run({
             "refiner_prompt":   {"query": text},
             "generator_prompt": {"query": text},
-        })
+        }, include_outputs_from={"retriever"})
 
         answer = result["generator_llm"]["replies"][0].text
         documents = result["retriever"]["documents"]
@@ -63,8 +64,8 @@ class MechRabotService:
 # ── Web Endpoint ────────────────────────────────────────────────────────────
 @app.function(
     secrets=[
-        modal.Secret.from_name("google-gen-api-mechrabot"),
         modal.Secret.from_name("qdrant-secret-mechrabot"),
+        modal.Secret.from_name("deepseek_APi")
     ],
 )
 @modal.fastapi_endpoint(method="POST")
@@ -79,7 +80,7 @@ def query_endpoint(request: dict) -> dict:
 
 # ── Test Entrypoint ─────────────────────────────────────────────────────────
 @app.local_entrypoint()
-def test(text: str = "What is the torque for cylinder head cover bolts?"):
+def test(text: str = " ازاي اغير سير الكاتينة؟ "):
     service = MechRabotService()
     result = service.query.remote(text)
     print(result["answer"])

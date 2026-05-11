@@ -27,8 +27,9 @@ from typing import List
 # ── Haystack ──────────────────────────────────────────────────────────────────
 from haystack import Pipeline, component, Document
 from haystack.components.builders import ChatPromptBuilder
+from haystack.components.generators.chat import OpenAIChatGenerator
 from haystack.dataclasses import ChatMessage
-from haystack_integrations.components.generators.google_genai import GoogleGenAIChatGenerator
+from haystack.utils import Secret
 
 # ── External ──────────────────────────────────────────────────────────────────
 from FlagEmbedding import BGEM3FlagModel
@@ -39,7 +40,9 @@ from qdrant_client import QdrantClient, models
 # 0.  CREDENTIALS  ← put your keys here
 # ══════════════════════════════════════════════════════════════════════════════
 
-os.environ["GEMINI_API_KEY"]  = "YOUR_GEMINI_API_KEY"
+_MY_AGENT_ROUTER_KEY = "YOUR_AGENT_ROUTER_API_KEY"
+
+os.environ["AGENT_ROUTER_API_KEY"]  = _MY_AGENT_ROUTER_KEY
 os.environ["QDRANT_URL"]      = "YOUR_QDRANT_URL"        # e.g. https://xxxx.qdrant.io:6333
 os.environ["QDRANT_API_KEY"]  = "YOUR_QDRANT_API_KEY"
 
@@ -239,7 +242,11 @@ def build_pipeline(
     pipe.add_component("refiner_prompt",
                        ChatPromptBuilder(template=translator_refiner_template))
     pipe.add_component("refiner_llm",
-                       GoogleGenAIChatGenerator(model="gemini-2.0-flash"))
+                       OpenAIChatGenerator(
+                           api_key=Secret.from_env_var("AGENT_ROUTER_API_KEY"),
+                           api_base_url="https://agentrouter.org/v1",
+                           model="google/gemini-2.5-flash"
+                       ))
 
     # ── 2. Embedder ───────────────────────────────────────────────────
     pipe.add_component("embedder", MechRabotEmbedder())
@@ -254,7 +261,11 @@ def build_pipeline(
     pipe.add_component("generator_prompt",
                        ChatPromptBuilder(template=generator_template))
     pipe.add_component("generator_llm",
-                       GoogleGenAIChatGenerator(model="gemini-2.5-pro-preview-05-06"))
+                       OpenAIChatGenerator(
+                           api_key=Secret.from_env_var("AGENT_ROUTER_API_KEY"),
+                           api_base_url="https://agentrouter.org/v1",
+                           model="google/gemini-2.5-pro-preview-05-06"
+                       ))
 
     # ── Connections ───────────────────────────────────────────────────
     pipe.connect("refiner_prompt.prompt",   "refiner_llm.messages")
