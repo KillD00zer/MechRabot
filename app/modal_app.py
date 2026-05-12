@@ -6,6 +6,10 @@ Serves the Haystack pipeline on a T4 GPU as a web endpoint.
 import modal
 
 # ── Container image ─────────────────────────────────────────────────────────
+CACHE_DIR = "/hf-cache"
+MODEL_NAME = "BAAI/bge-m3"
+MINUTES = 60  # seconds
+
 image = (
     modal.Image.debian_slim(python_version="3.11")
     .pip_install(
@@ -16,15 +20,36 @@ image = (
         "accelerate",
         "fastapi[standard]",
     )
+    .env({"HF_XET_HIGH_PERFORMANCE": "1", "HF_HUB_CACHE": CACHE_DIR})
     .add_local_python_source("app")
 )
 
+# Import heavy deps only inside the remote container
+with image.imports():
+    from FlagEmbedding import BGEM3FlagModel
+
 app = modal.App("mechrabot", image=image)
+
+# ── Volumes ─────────────────────────────────────────────────────────────────
+cache_volume = modal.Volume.from_name("hf-hub-cache", create_if_missing=True)
+
+
+# ── Cache model weights ────────────────────────────────────────────────────
+@app.function(
+    image=image, volumes={CACHE_DIR: cache_volume}, timeout=20 * MINUTES
+)
+def download_model():
+    from huggingface_hub import snapshot_download
+
+    result = snapshot_download(MODEL_NAME)
+    print(f"Downloaded model weights to {result}")
 
 
 # ── GPU Service ─────────────────────────────────────────────────────────────
 @app.cls(
     gpu="T4",
+    scaledown_window=10 * MINUTES,
+    volumes={CACHE_DIR: cache_volume},
     secrets=[
         modal.Secret.from_name("qdrant-secret-mechrabot"),
         modal.Secret.from_name("deepseek_APi")
@@ -80,7 +105,7 @@ def query_endpoint(request: dict) -> dict:
 
 # ── Test Entrypoint ─────────────────────────────────────────────────────────
 @app.local_entrypoint()
-def test(text: str = " ازاي اغير سير الكاتينة؟ "):
+def test(text: str = " مقاس الجنط؟"):
     service = MechRabotService()
     result = service.query.remote(text)
     print(result["answer"])

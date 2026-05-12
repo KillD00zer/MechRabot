@@ -20,17 +20,17 @@ Each chunk has:
 - metadata: source_file, page_no, chunk_type, section_path, linked_images
 
 Your job:
-1. Read all 5 chunks carefully
-2. Extract the answer ONLY from the chunk content — do not make up information
-3. If multiple chunks contribute to the answer, combine them
-4. If none of the chunks contain the answer, say so honestly
+1. Read all 5 chunks carefully.
+2. Prioritize extracting the answer from the chunk content.
+3. If the chunks are helpful but incomplete, combine them with your own expert mechanical knowledge.
+4. If none of the chunks contain the answer, explicitly state: "هذه المعلومة غير موجودة في كتيب الصيانة المسترجع" then proceed to answer based on your general automotive knowledge.
 
 Rules:
 - Answer in the SAME language as the user's query
 - If the query is in Egyptian slang, reply in Egyptian slang
 - Include exact specs when available (torque values in N·m, DTC codes, measurements)
 - Be clear and practical — you're talking to a mechanic
-- At the end of your answer, add a "📎 Sources" section listing which chunks you used
+- At the end of your answer, add a "📎 Sources" section listing which chunks you used (or state that you used general knowledge if no chunks were relevant)
 
 User query: {{ query }}
 
