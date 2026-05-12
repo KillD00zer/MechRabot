@@ -20,7 +20,7 @@ def prepare_sparse_vector(single_sparse_dict):
 class MechRabotRetriever:
     """Hybrid retriever: BGE-M3 (dense + sparse + colbert) over Qdrant."""
 
-    def __init__(self, client, col_name, prefetch_limit=50, top_k=5):
+    def __init__(self, client, col_name, prefetch_limit=50, top_k=10):
         self.client = client
         self.col_name = col_name
         self.prefetch_limit = prefetch_limit
@@ -40,7 +40,7 @@ class MechRabotRetriever:
         response = self.client.query_points(                       # <--------- starting the process
             collection_name=self.col_name,
             prefetch=prefetcher,
-            query=colbert_list,                    # <----  use colbert to elevat top 5 of the 50
+            query=colbert_list,                    # <----  use colbert to elevat top_k of the 50
             using="colbert",
             limit=self.top_k)
 
