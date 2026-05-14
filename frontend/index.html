@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MechRabot</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+  * {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    box-sizing: border-box;
+  }
+
+  html, body {
+    padding: 0;
+    margin: 0;
+    background-color: #0e0f0f;
+    color: #ffffff;
+  }
+
+  @keyframes message-in {
+    0%   { transform: scale(0); max-height: 100%; overflow: hidden; }
+    80%  { transform: scale(1.1); }
+    100% { transform: scale(1); max-height: 100%; overflow: visible; }
+  }
+
+  @keyframes dot-falling {
+    0%   { box-shadow: 9999px -15px 0 0 rgba(255,255,255,0); }
+    25%,50%,75% { box-shadow: 9999px 0 0 0 #eeeeee; }
+    100% { box-shadow: 9999px 15px 0 0 rgba(255,255,255,0); }
+  }
+  @keyframes dot-falling-before {
+    0%   { box-shadow: 9984px -15px 0 0 rgba(255,255,255,0); }
+    25%,50%,75% { box-shadow: 9984px 0 0 0 #eeeeee; }
+    100% { box-shadow: 9984px 15px 0 0 rgba(255,255,255,0); }
+  }
+  @keyframes dot-falling-after {
+    0%   { box-shadow: 10014px -15px 0 0 rgba(255,255,255,0); }
+    25%,50%,75% { box-shadow: 10014px 0 0 0 #eeeeee; }
+    100% { box-shadow: 10014px 15px 0 0 rgba(255,255,255,0); }
+  }
+
+  @keyframes dot-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  @keyframes spinner-rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes check-draw {
+    from { stroke-dashoffset: 24; }
+    to { stroke-dashoffset: 0; }
+  }
+
+  .msg-enter {
+    transform-origin: 0 100%;
+    animation: message-in 0.15s ease-out 0s forwards;
+  }
+
+  .dot-falling {
+    position: relative;
+    left: -9999px;
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    background-color: #eeeeee;
+    color: #eeeeee;
+    box-shadow: 9999px 0 0 0 #eeeeee;
+    animation: dot-falling 1.5s infinite linear;
+    animation-delay: 0.1s;
+  }
+  .dot-falling::before {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    background-color: #eeeeee;
+    animation: dot-falling-before 1.5s infinite linear;
+    animation-delay: 0s;
+  }
+  .dot-falling::after {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    background-color: #eeeeee;
+    animation: dot-falling-after 1.5s infinite linear;
+    animation-delay: 0.2s;
+  }
+
+  .dot-pulse { animation: dot-pulse 3s ease-in-out infinite; }
+  .spinner { animation: spinner-rotate 1s linear infinite; }
+  .checkmark { stroke-dasharray: 24; stroke-dashoffset: 24; animation: check-draw 0.4s ease-out 0.05s forwards; }
+
+  .ltr { direction: ltr; text-align: left; }
+  .rtl { direction: rtl; text-align: right; }
+
+  .scrollbar-thin::-webkit-scrollbar { width: 4px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+
+  textarea:focus { outline: none; }
+</style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+<div class="max-w-3xl mx-auto w-full flex flex-col h-screen px-6">
+
+  <header class="py-5 border-b border-white/10 shrink-0">
+    <h1 class="text-2xl font-bold text-[#46c8ff]">MechRabot</h1>
+    <p class="text-sm text-white/60 mt-0.5">Smart Spare Parts Assistant</p>
+  </header>
+
+  <div id="status-bar" class="flex items-center gap-2.5 py-3 shrink-0">
+    <div class="relative w-4 h-4 flex items-center justify-center">
+      <div id="status-dot" class="w-2 h-2 rounded-full bg-[#46c8ff] dot-pulse"></div>
+      <svg id="status-spinner" class="absolute w-4 h-4 text-[#fec84b] hidden" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2.5" stroke-dasharray="50" stroke-linecap="round" class="spinner"/>
+      </svg>
+      <svg id="status-check" class="absolute w-4 h-4 text-[#46c8ff] hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12" class="checkmark"/>
+      </svg>
+    </div>
+    <span id="status-text" class="text-sm text-white/60 font-medium">Ready</span>
+  </div>
+
+  <main id="chat-area" class="flex-1 overflow-y-auto py-5 space-y-8 scrollbar-thin">
+    <div id="empty-state" class="flex flex-col items-center justify-center h-full text-white/20">
+      <svg class="w-14 h-14 mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+      <p class="text-base">Ask about any spare part</p>
+    </div>
+  </main>
+
+  <div id="images-row-container" class="hidden shrink-0 py-3 border-t border-white/10">
+    <p class="text-xs text-white/30 mb-2">Retrieved Images</p>
+    <div id="images-row" class="flex gap-3 overflow-x-auto pb-1 scrollbar-thin"></div>
+  </div>
+
+  <div class="shrink-0 py-5 border-t border-white/10">
+    <div class="flex gap-3 items-end">
+      <textarea id="query-input" rows="1"
+        class="flex-1 bg-[#27282a] border border-[#525355] rounded-lg px-4 py-3 text-white placeholder-[#57585a] resize-none text-sm"
+        placeholder="Type your question..."
+        maxlength="2000"
+      ></textarea>
+      <button id="send-btn"
+        class="bg-[#46c8ff] hover:bg-[#46c8ff]/80 disabled:bg-[#27282a] disabled:text-white/30 disabled:cursor-not-allowed text-white rounded-lg px-5 py-3 text-sm font-semibold transition-colors shrink-0"
+      >Send</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_BASE = "";
+
+const chatArea = document.getElementById('chat-area');
+const emptyState = document.getElementById('empty-state');
+const queryInput = document.getElementById('query-input');
+const sendBtn = document.getElementById('send-btn');
+const imagesRowContainer = document.getElementById('images-row-container');
+const imagesRow = document.getElementById('images-row');
+
+const statusDot = document.getElementById('status-dot');
+const statusSpinner = document.getElementById('status-spinner');
+const statusCheck = document.getElementById('status-check');
+const statusText = document.getElementById('status-text');
+
+let abortController = null;
+
+function setStatus(state) {
+  statusDot.className = 'w-2 h-2 rounded-full';
+  statusSpinner.classList.add('hidden');
+  statusCheck.classList.add('hidden');
+
+  if (state === 'ready') {
+    statusDot.classList.add('bg-[#46c8ff]', 'dot-pulse');
+    statusText.textContent = 'Ready';
+    statusText.className = 'text-sm text-white/60 font-medium';
+  } else if (state === 'working') {
+    statusSpinner.classList.remove('hidden');
+    statusText.textContent = 'Working...';
+    statusText.className = 'text-sm text-[#fec84b] font-medium';
+  } else if (state === 'finished') {
+    statusDot.classList.add('bg-[#46c8ff]');
+    statusCheck.classList.remove('hidden');
+    statusText.textContent = 'Done';
+    statusText.className = 'text-sm text-[#46c8ff] font-medium';
+    setTimeout(() => setStatus('ready'), 1500);
+  }
+}
+
+function isRTL(text) {
+  if (!text) return false;
+  const arabic = (text.match(/[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/g) || []).length;
+  const latin = (text.match(/[a-zA-Z]/g) || []).length;
+  return arabic > latin;
+}
+
+function autoResize() {
+  queryInput.style.height = 'auto';
+  queryInput.style.height = Math.min(queryInput.scrollHeight, 160) + 'px';
+}
+
+function createMessageBubble(role, text) {
+  const wrapper = document.createElement('div');
+  const rtl = isRTL(text);
+  wrapper.className = 'msg-enter flex ' + (role === 'user' ? 'justify-end' : 'justify-start');
+
+  if (role === 'user') {
+    const bubble = document.createElement('div');
+    bubble.className = 'max-w-[80%] border-2 border-white rounded-lg px-4 py-3 text-sm ' + (rtl ? 'rtl' : 'ltr');
+    bubble.textContent = text;
+    wrapper.appendChild(bubble);
+  } else {
+    const bubble = document.createElement('div');
+    bubble.className = 'max-w-[90%] text-sm text-white whitespace-pre-wrap ' + (rtl ? 'rtl' : 'ltr');
+    bubble.textContent = text;
+    wrapper.appendChild(bubble);
+  }
+
+  return wrapper;
+}
+
+function createLoadingDots() {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'msg-enter flex justify-start';
+  wrapper.id = 'loading-msg';
+  const container = document.createElement('div');
+  container.className = 'py-4 overflow-hidden relative';
+  container.style.height = '30px';
+  container.style.width = '46px';
+  const dots = document.createElement('div');
+  dots.className = 'dot-falling';
+  container.appendChild(dots);
+  wrapper.appendChild(container);
+  return wrapper;
+}
+
+function renderImages(linkedImages) {
+  imagesRow.innerHTML = '';
+  if (!linkedImages || linkedImages.length === 0) {
+    imagesRowContainer.classList.add('hidden');
+    return;
+  }
+  imagesRowContainer.classList.remove('hidden');
+  linkedImages.forEach(url => {
+    const img = document.createElement('img');
+    img.src = url;
+    img.alt = 'Image';
+    img.className = 'h-24 w-auto rounded-lg border border-white/10 object-cover shrink-0 bg-[#27282a]';
+    img.onerror = () => { img.remove(); if (!imagesRow.children.length) imagesRowContainer.classList.add('hidden'); };
+    imagesRow.appendChild(img);
+  });
+}
+
+async function sendQuery() {
+  const text = queryInput.value.trim();
+  if (!text) return;
+  if (abortController) abortController.abort();
+
+  emptyState.classList.add('hidden');
+  chatArea.appendChild(createMessageBubble('user', text));
+  chatArea.scrollTop = chatArea.scrollHeight;
+  queryInput.value = '';
+  autoResize();
+  sendBtn.disabled = true;
+  setStatus('working');
+
+  const loadingEl = createLoadingDots();
+  chatArea.appendChild(loadingEl);
+  chatArea.scrollTop = chatArea.scrollHeight;
+
+  abortController = new AbortController();
+
+  try {
+    const res = await fetch(API_BASE + '/query_endpoint', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: text }),
+      signal: abortController.signal,
+    });
+
+    const loadingMsg = document.getElementById('loading-msg');
+    if (loadingMsg) loadingMsg.remove();
+
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      chatArea.appendChild(createMessageBubble('bot', 'Error: ' + (errData.detail || res.statusText)));
+    } else {
+      const data = await res.json();
+      chatArea.appendChild(createMessageBubble('bot', data.answer));
+      renderImages(data.sources?.flatMap(s => s.linked_images || []) || []);
+    }
+  } catch (err) {
+    const loadingMsg = document.getElementById('loading-msg');
+    if (loadingMsg) loadingMsg.remove();
+    if (err.name !== 'AbortError') {
+      chatArea.appendChild(createMessageBubble('bot', 'Connection failed. Please try again.'));
+    }
+  } finally {
+    abortController = null;
+    sendBtn.disabled = false;
+    chatArea.scrollTop = chatArea.scrollHeight;
+    setStatus('finished');
+    queryInput.focus();
+  }
+}
+
+queryInput.addEventListener('input', autoResize);
+queryInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendQuery();
+  }
+});
+sendBtn.addEventListener('click', sendQuery);
+queryInput.focus();
+</script>
+</body>
+</html>
