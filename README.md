@@ -11,7 +11,7 @@
 [![LLM](https://img.shields.io/badge/DeepSeek--v4--Flash-Generation-4FC08D.svg)](https://deepseek.com/)
 [![License](https://img.shields.io/badge/License-MIT-27AE60.svg)](#-license)
 
-![Cover Image](Gemini_Generated_Image_7vi6q47vi6q47vi6.jpg)
+![Cover Image](.github/assets/social-preview.png)
 
 *Transforming dense, static technical documentation into a spatially-aware, context-preserving diagnostic intelligence system — engineered for any industrial domain, any language, any maintenance workflow.*
 
