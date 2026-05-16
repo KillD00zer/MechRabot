@@ -30,17 +30,91 @@
         .markdown-body table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
         .markdown-body th, .markdown-body td { border: 1px solid #52525b; padding: 8px; text-align: left; }
         .markdown-body th { background-color: #3f3f46; }
+
+        /* ── Mode Toggle ───────────────────────────────── */
+        .mode-toggle {
+            display: inline-flex;
+            background: #3e3f4b;
+            border-radius: 10px;
+            padding: 3px;
+            gap: 2px;
+            border: 1px solid #52525b;
+        }
+        .mode-btn {
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: #9ca3af;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .mode-btn:hover {
+            color: #d1d5db;
+        }
+        .mode-btn.active {
+            background: linear-gradient(135deg, #ca8a04, #eab308);
+            color: #000;
+            box-shadow: 0 2px 8px rgba(234, 179, 8, 0.3);
+        }
+
+        /* ── Vehicle Select ────────────────────────────── */
+        .vehicle-select {
+            appearance: none;
+            -webkit-appearance: none;
+            background: #27282d;
+            border: 1px solid #3f3f46;
+            border-radius: 8px;
+            padding: 6px 28px 6px 10px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #d1d5db;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s ease;
+            width: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%239ca3af' viewBox='0 0 16 16'%3E%3Cpath d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+        }
+        .vehicle-select:hover {
+            border-color: #52525b;
+            background-color: #2f3036;
+        }
+        .vehicle-select:focus {
+            border-color: #eab308;
+            box-shadow: 0 0 0 2px rgba(234, 179, 8, 0.15);
+        }
+        .vehicle-select option {
+            background: #1c1d21;
+            color: #d1d5db;
+        }
     </style>
 </head>
 <body class="bg-chatbg text-gray-100 font-sans h-screen flex overflow-hidden">
 
     <!-- Sidebar -->
     <div class="w-64 bg-sidebar hidden md:flex flex-col border-r border-gray-700">
-        <div class="p-4 border-b border-gray-700 flex items-center gap-3">
-            <i class="fa-solid fa-robot text-2xl text-yellow-500"></i>
-            <div>
+        <div class="p-4 border-b border-gray-700">
+            <div class="flex items-center gap-3 mb-3">
+                <i class="fa-solid fa-robot text-2xl text-yellow-500"></i>
                 <h1 class="font-bold text-lg text-yellow-500">MechRabot</h1>
-                <p class="text-xs text-gray-400">Chery M11 Assistant</p>
+            </div>
+            <label class="text-[10px] uppercase tracking-wider text-gray-500 font-semibold mb-1 block">
+                <i class="fa-solid fa-car text-[9px]"></i> Vehicle
+            </label>
+            <select class="vehicle-select" id="vehicle-select">
+                <option value="chery-m11" selected>Chery M11</option>
+            </select>
+            <div class="mt-3 rounded-lg overflow-hidden border border-gray-700/50" style="background: #1c1d21;">
+                <img id="vehicle-img" src="MyLove.png" alt="Chery M11"
+                     class="w-full h-auto object-cover opacity-90 hover:opacity-100 transition-opacity duration-300"
+                     style="max-height: 140px;">
             </div>
         </div>
         <div class="p-4 flex-1 flex flex-col justify-end">
@@ -72,6 +146,18 @@
 
         <!-- Input Area -->
         <div class="absolute bottom-0 left-0 right-0 bg-chatbg/90 backdrop-blur-sm p-4 border-t border-gray-700">
+            <!-- Mode Toggle -->
+            <div class="max-w-4xl mx-auto mb-2 flex items-center gap-2">
+                <span class="text-[11px] text-gray-500 font-medium">Response Mode:</span>
+                <div class="mode-toggle" id="mode-toggle">
+                    <button class="mode-btn active" data-mode="restricted" id="btn-restricted">
+                        <i class="fa-solid fa-lock text-[10px]"></i> Restricted
+                    </button>
+                    <button class="mode-btn" data-mode="augmented" id="btn-augmented">
+                        <i class="fa-solid fa-brain text-[10px]"></i> Augmented
+                    </button>
+                </div>
+            </div>
             <div class="max-w-4xl mx-auto relative">
                 <textarea id="user-input" rows="1" placeholder="Ask about maintenance details... (Press Enter to send)" 
                     class="w-full bg-inputbg text-gray-100 rounded-xl pr-12 pl-4 py-4 focus:outline-none focus:ring-1 focus:ring-yellow-500 resize-none overflow-hidden shadow-lg border border-gray-600"></textarea>
@@ -97,6 +183,32 @@
         const userInput = document.getElementById('user-input');
         const sendBtn = document.getElementById('send-btn');
 
+        // ── Mode Toggle Logic ──────────────────────────────────────────
+        let currentMode = 'restricted';
+        const modeToggle = document.getElementById('mode-toggle');
+        modeToggle.addEventListener('click', (e) => {
+            const btn = e.target.closest('.mode-btn');
+            if (!btn) return;
+            currentMode = btn.dataset.mode;
+            modeToggle.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        });
+
+        // ── RTL / LTR Auto-Detection ─────────────────────────────────────
+        function isRTL(text) {
+            // Check first 100 chars for Arabic/Hebrew/Persian/Urdu script
+            const sample = text.replace(/<[^>]*>/g, '').slice(0, 100);
+            const rtlChars = (sample.match(/[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF\u0590-\u05FF]/g) || []).length;
+            const latinChars = (sample.match(/[a-zA-Z]/g) || []).length;
+            return rtlChars > latinChars;
+        }
+
+        // Auto-detect direction in the input textarea
+        userInput.addEventListener('input', function() {
+            this.dir = isRTL(this.value) ? 'rtl' : 'ltr';
+            this.style.textAlign = isRTL(this.value) ? 'right' : 'left';
+        });
+
         // Append Message to UI
         function appendMessage(role, text, sources = []) {
             const isUser = role === 'user';
@@ -104,6 +216,8 @@
             const icon = isUser ? '<i class="fa-solid fa-user text-sm"></i>' : '<i class="fa-solid fa-robot text-sm"></i>';
             const roundedClass = isUser ? 'rounded-tr-none' : 'rounded-tl-none';
             const avatarBg = isUser ? 'bg-gray-600' : 'bg-yellow-500 text-black';
+            const textDir = isRTL(text) ? 'rtl' : 'ltr';
+            const textAlign = isRTL(text) ? 'text-right' : 'text-left';
             
             const htmlText = isUser ? text : marked.parse(text);
 
@@ -115,7 +229,7 @@
                     ${icon}
                 </div>
                 <div class="flex flex-col gap-2 w-full ${isUser ? 'items-end' : 'items-start'}">
-                    <div class="${bubbleColor} p-4 rounded-2xl ${roundedClass} text-sm leading-relaxed shadow-sm max-w-[85%] markdown-body">
+                    <div dir="${textDir}" class="${bubbleColor} p-4 rounded-2xl ${roundedClass} text-sm leading-relaxed shadow-sm max-w-[85%] markdown-body ${textAlign}">
                         ${htmlText}
                     </div>
             `;
@@ -193,7 +307,7 @@
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ query: text })
+                    body: JSON.stringify({ query: text, mode: currentMode })
                 });
 
                 const data = await response.json();

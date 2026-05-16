@@ -51,7 +51,7 @@ def build_pipeline() -> Pipeline:
     ))
 
     # ── 4. Generator: final answer ────────────────────────────────────
-    pipe.add_component("generator_prompt", ChatPromptBuilder(template=generator_template, required_variables=["documents", "query"]))
+    pipe.add_component("generator_prompt", ChatPromptBuilder(template=generator_template, required_variables=["documents", "query", "mode"]))
     pipe.add_component("generator_llm", OpenAIChatGenerator(
         model="deepseek-v4-flash",
         api_key=Secret.from_env_var("deepseek_APi"),

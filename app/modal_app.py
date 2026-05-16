@@ -63,10 +63,10 @@ class MechRabotService:
         self.pipe = build_pipeline()
 
     @modal.method()
-    def query(self, text: str) -> dict:
+    def query(self, text: str, mode: str = "restricted") -> dict:
         result = self.pipe.run({
             "refiner_prompt":   {"query": text},
-            "generator_prompt": {"query": text},
+            "generator_prompt": {"query": text, "mode": mode},
         }, include_outputs_from={"retriever"})
 
         answer = result["generator_llm"]["replies"][0].text
@@ -96,11 +96,12 @@ class MechRabotService:
 @modal.fastapi_endpoint(method="POST")
 def query_endpoint(request: dict) -> dict:
     """
-    POST {"query": "your question"}
+    POST {"query": "your question", "mode": "restricted|augmented"}
     Returns {"answer": "...", "sources": [...]}
     """
+    mode = request.get("mode", "restricted")
     service = MechRabotService()
-    return service.query.remote(request["query"])
+    return service.query.remote(request["query"], mode)
 
 
 # ── Test Entrypoint ─────────────────────────────────────────────────────────
