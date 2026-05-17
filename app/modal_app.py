@@ -31,7 +31,9 @@ with image.imports():
 app = modal.App("mechrabot", image=image)
 
 # ── Volumes ─────────────────────────────────────────────────────────────────
-cache_volume = modal.Volume.from_name("hf-hub-cache", create_if_missing=True)
+cache_volume  = modal.Volume.from_name("hf-hub-cache", create_if_missing=True)
+images_volume = modal.Volume.from_name("mechrabot-images")
+IMAGES_DIR = "/images"
 
 
 # ── Cache model weights ────────────────────────────────────────────────────
@@ -92,6 +94,7 @@ class MechRabotService:
         modal.Secret.from_name("qdrant-secret-mechrabot"),
         modal.Secret.from_name("deepseek_APi")
     ],
+    volumes={IMAGES_DIR: images_volume},
 )
 @modal.fastapi_endpoint(method="POST")
 def query_endpoint(request: dict) -> dict:
@@ -102,6 +105,23 @@ def query_endpoint(request: dict) -> dict:
     mode = request.get("mode", "restricted")
     service = MechRabotService()
     return service.query.remote(request["query"], mode)
+
+
+# ── Image Endpoint ──────────────────────────────────────────────────────────
+@app.function(volumes={IMAGES_DIR: images_volume})
+@modal.fastapi_endpoint(method="GET")
+def get_image(name: str):
+    """
+    GET ?name=image_000361
+    Returns the PNG file from the mechrabot-images volume.
+    """
+    from fastapi.responses import FileResponse, JSONResponse
+    from pathlib import Path
+
+    path = Path(IMAGES_DIR) / f"{name}.png"
+    if not path.exists():
+        return JSONResponse({"error": f"Image '{name}' not found"}, status_code=404)
+    return FileResponse(path, media_type="image/png")
 
 
 # ── Test Entrypoint ─────────────────────────────────────────────────────────
