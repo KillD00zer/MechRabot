@@ -63,6 +63,44 @@
             box-shadow: 0 2px 8px rgba(234, 179, 8, 0.3);
         }
 
+        /* ── Mode Tooltips ─────────────────────────────── */
+        .mode-btn-wrapper {
+            position: relative;
+        }
+        .mode-tooltip {
+            position: absolute;
+            bottom: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%) translateY(6px);
+            background: #1c1d21;
+            color: #d1d5db;
+            font-size: 11px;
+            font-weight: 400;
+            line-height: 1.5;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #3f3f46;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+            z-index: 50;
+        }
+        .mode-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: #1c1d21;
+        }
+        .mode-btn-wrapper:hover .mode-tooltip {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
         /* ── Vehicle Select ────────────────────────────── */
         .vehicle-select {
             appearance: none;
@@ -127,9 +165,9 @@
     </div>
 
     <!-- Main Chat Area -->
-    <div class="flex-1 flex flex-col relative h-full">
+    <div class="flex-1 flex flex-col h-full min-h-0">
         <!-- Chat Display Area -->
-        <div id="chat-container" class="flex-1 overflow-y-auto p-4 sm:p-6 pb-32 space-y-6">
+        <div id="chat-container" class="flex-1 overflow-y-auto p-4 sm:p-6 pb-4 space-y-6">
             
             <!-- Welcome Message -->
             <div class="flex gap-4 max-w-4xl mx-auto">
@@ -145,17 +183,23 @@
         </div>
 
         <!-- Input Area -->
-        <div class="absolute bottom-0 left-0 right-0 bg-chatbg/90 backdrop-blur-sm p-4 border-t border-gray-700">
+        <div class="flex-shrink-0 bg-chatbg/90 backdrop-blur-sm p-4 border-t border-gray-700">
             <!-- Mode Toggle -->
             <div class="max-w-4xl mx-auto mb-2 flex items-center gap-2">
                 <span class="text-[11px] text-gray-500 font-medium">Response Mode:</span>
                 <div class="mode-toggle" id="mode-toggle">
-                    <button class="mode-btn active" data-mode="restricted" id="btn-restricted">
-                        <i class="fa-solid fa-lock text-[10px]"></i> Restricted
-                    </button>
-                    <button class="mode-btn" data-mode="augmented" id="btn-augmented">
-                        <i class="fa-solid fa-brain text-[10px]"></i> Augmented
-                    </button>
+                    <div class="mode-btn-wrapper">
+                        <span class="mode-tooltip">Answers strictly from the repair manual only</span>
+                        <button class="mode-btn active" data-mode="restricted" id="btn-restricted">
+                            <i class="fa-solid fa-lock text-[10px]"></i> Restricted
+                        </button>
+                    </div>
+                    <div class="mode-btn-wrapper">
+                        <span class="mode-tooltip">Uses AI reasoning on top of manual data</span>
+                        <button class="mode-btn" data-mode="augmented" id="btn-augmented">
+                            <i class="fa-solid fa-brain text-[10px]"></i> Augmented
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="max-w-4xl mx-auto relative">
@@ -234,32 +278,7 @@
                     </div>
             `;
 
-            if (!isUser && sources.length > 0) {
-                let imagesHtml = '';
-                let addedImages = new Set();
-                
-                sources.forEach(source => {
-                    if (source.linked_images && source.linked_images.length > 0) {
-                        source.linked_images.forEach(imgPath => {
-                            if (!addedImages.has(imgPath)) {
-                                imagesHtml += `
-                                    <div class="mt-2 p-2 bg-gray-800 rounded-lg border border-gray-700 w-64">
-                                        <div class="text-xs text-gray-400 mb-1"><i class="fa-regular fa-image"></i> Attached Diagram</div>
-                                        <div class="w-full h-32 bg-gray-700 rounded flex items-center justify-center text-xs text-gray-500 break-all text-center px-2">
-                                            ${imgPath.split('/').pop()}
-                                        </div>
-                                    </div>
-                                `;
-                                addedImages.add(imgPath);
-                            }
-                        });
-                    }
-                });
-                
-                if(imagesHtml !== '') {
-                    htmlContent += `<div class="flex flex-wrap gap-2">${imagesHtml}</div>`;
-                }
-            }
+            // Images display removed
 
             htmlContent += `</div>`;
             messageDiv.innerHTML = htmlContent;
