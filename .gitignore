@@ -1,4 +1,32 @@
+# ── Python ──────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+dist/
+build/
+
+# ── Secrets ─────────────────────────────────────
+.env
+.env.*
+*.pem
+*.key
+
+# ── Data (too large for git) ────────────────────
 conversion_result
 kgl v1
 kgl v2
 kgl v3
+kgl V3 outputs/
+main_work/data/
+
+# ── IDE / OS ────────────────────────────────────
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+
+# ── Modal ───────────────────────────────────────
+.modal/
