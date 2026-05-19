@@ -20,7 +20,7 @@ def prepare_sparse_vector(single_sparse_dict):
 class MechRabotRetriever:
     """Hybrid retriever: BGE-M3 (dense + sparse + colbert) over Qdrant."""
 
-    def __init__(self, client, col_name, prefetch_limit=50, top_k=10):
+    def __init__(self, client, col_name, prefetch_limit=50, top_k=15):
         self.client = client
         self.col_name = col_name
         self.prefetch_limit = prefetch_limit

@@ -62,13 +62,17 @@ class MechRabotService:
     @modal.enter()
     def setup(self):
         from app.core.pipeline import build_pipeline
-        self.pipe = build_pipeline()
+        self.pipe_standard = build_pipeline(use_reasoner=False)
+        self.pipe_super = build_pipeline(use_reasoner=True)
 
     @modal.method()
     def query(self, text: str, mode: str = "restricted") -> dict:
-        result = self.pipe.run({
+        pipe = self.pipe_super if mode == "super_augmented" else self.pipe_standard
+        prompt_mode = "augmented" if mode == "super_augmented" else mode
+
+        result = pipe.run({
             "refiner_prompt":   {"query": text},
-            "generator_prompt": {"query": text, "mode": mode},
+            "generator_prompt": {"query": text, "mode": prompt_mode},
         }, include_outputs_from={"retriever"})
 
         answer = result["generator_llm"]["replies"][0].text

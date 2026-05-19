@@ -19,15 +19,15 @@ from app.core.embedder import MechRabotEmbedder
 from app.core.retriever import MechRabotRetriever
 
 
-def build_pipeline() -> Pipeline:
+def build_pipeline(use_reasoner: bool = False) -> Pipeline:
     """
     Factory function — returns a fully wired MechRabot pipeline.
     Each call creates fresh component instances (required by Haystack).
 
     Usage:
-        pipe = build_pipeline()
+        pipe = build_pipeline(use_reasoner=True)
         result = pipe.run({"refiner_prompt": {"query": "your question here"},
-                           "generator_prompt": {"query": "your question here"}})
+                           "generator_prompt": {"query": "your question here", "mode": "augmented"}})
         print(result["generator_llm"]["replies"][0].text)
     """
     pipe = Pipeline()
@@ -35,7 +35,7 @@ def build_pipeline() -> Pipeline:
     # ── 1. Refiner: translate + refine the query ──────────────────────
     pipe.add_component("refiner_prompt", ChatPromptBuilder(template=translator_refiner_template, required_variables=["query"]))
     pipe.add_component("refiner_llm", OpenAIChatGenerator(
-        model="deepseek-v4-flash",
+        model="deepseek-reasoner",
         api_key=Secret.from_env_var("deepseek_APi"),
         api_base_url="https://api.deepseek.com",
         generation_kwargs={"temperature": 0.2},
@@ -51,9 +51,10 @@ def build_pipeline() -> Pipeline:
     ))
 
     # ── 4. Generator: final answer ────────────────────────────────────
+    gen_model = "deepseek-reasoner" if use_reasoner else "deepseek-chat"
     pipe.add_component("generator_prompt", ChatPromptBuilder(template=generator_template, required_variables=["documents", "query", "mode"]))
     pipe.add_component("generator_llm", OpenAIChatGenerator(
-        model="deepseek-v4-flash",
+        model=gen_model,
         api_key=Secret.from_env_var("deepseek_APi"),
         api_base_url="https://api.deepseek.com",
         generation_kwargs={"temperature": 0.4},
