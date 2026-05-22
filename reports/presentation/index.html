@@ -802,34 +802,47 @@
             50%, 100% { left: 100%; }
         }
 
-        /* ── Finished Banner & Animation ───────────────────── */
-        .finished-banner {
-            position: relative;
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(59, 130, 246, 0.12) 100%);
-            border: 1.5px solid rgba(16, 185, 129, 0.35);
-            border-radius: 12px;
-            padding: 14px 20px;
-            text-align: center;
-            overflow: hidden;
+        /* ── Finished Overlay & Animation ──────────────── */
+        .finished-overlay {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 20;
+            pointer-events: none;
+            animation: floatFinished 4s infinite ease-in-out;
+        }
+
+        .finished-content {
+            background: linear-gradient(135deg, rgba(234, 179, 8, 0.25) 0%, rgba(16, 185, 129, 0.25) 100%);
+            border: 2px solid var(--primary);
+            box-shadow: 0 0 30px rgba(234, 179, 8, 0.4), inset 0 0 15px rgba(234, 179, 8, 0.2);
+            backdrop-filter: blur(12px);
+            padding: 10px 24px;
+            border-radius: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.15), inset 0 0 10px rgba(16, 185, 129, 0.1);
-            animation: pulseFinished 3s infinite ease-in-out;
+            overflow: hidden;
+            position: relative;
         }
 
-        .finished-text {
+        .finished-title {
             font-family: 'Outfit', sans-serif;
-            font-size: 12px;
-            font-weight: 800;
-            letter-spacing: 1.5px;
+            font-size: 16px;
+            font-weight: 900;
+            letter-spacing: 2px;
             color: #fff;
-            text-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
+            margin: 0;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
             display: flex;
             align-items: center;
             gap: 8px;
-            z-index: 2;
+        }
+
+        .finished-title i {
+            color: var(--primary);
+            animation: bounceFlag 1.5s infinite ease-in-out;
+            display: inline-block;
         }
 
         .finished-glow {
@@ -838,49 +851,18 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.25), transparent);
-            animation: shineSweep 4s infinite ease-in-out;
-            z-index: 1;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: shineSweep 2.5s infinite ease-in-out;
         }
 
-        .finished-sparkles {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-            z-index: 2;
+        @keyframes floatFinished {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-5px) rotate(2deg); }
         }
 
-        .sparkle {
-            position: absolute;
-            font-size: 14px;
-            opacity: 0;
-            animation: sparkleFloat 4s infinite ease-in-out;
-        }
-
-        .sparkle.s1 { left: 10%; top: 20%; animation-delay: 0s; }
-        .sparkle.s2 { right: 12%; top: 15%; animation-delay: 1.5s; }
-        .sparkle.s3 { left: 50%; bottom: 10%; animation-delay: 0.8s; }
-
-        @keyframes pulseFinished {
-            0%, 100% {
-                border-color: rgba(16, 185, 129, 0.35);
-                box-shadow: 0 0 20px rgba(16, 185, 129, 0.15);
-                transform: scale(1);
-            }
-            50% {
-                border-color: rgba(59, 130, 246, 0.7);
-                box-shadow: 0 0 25px rgba(59, 130, 246, 0.45);
-                transform: scale(1.025);
-            }
-        }
-
-        @keyframes sparkleFloat {
-            0% { transform: translateY(10px) scale(0.5); opacity: 0; }
-            50% { opacity: 0.85; }
-            100% { transform: translateY(-15px) scale(1.2); opacity: 0; }
+        @keyframes bounceFlag {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
         }
 
         /* ── Custom Theme Scrollbars ────────────────────── */
@@ -3253,8 +3235,18 @@ generator_template = [ChatMessage.from_user(
             </div>
 
             <!-- Slide 29: Team, Repo, and Live UI Links -->
-            <div class="slide" data-slide-name="Project Team &amp; Links">
-                <div class="slide-header">
+            <div class="slide" data-slide-name="Project Team &amp; Links" style="position: relative;">
+                <!-- High-performance Firework Ending Canvas -->
+                <canvas id="fireworks-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; border-radius: 20px;"></canvas>
+                <!-- Glowing (FINISHED) Badge Overlay -->
+                <div class="finished-overlay">
+                    <div class="finished-content">
+                        <span class="finished-glow"></span>
+                        <h2 class="finished-title"><i class="fa-solid fa-flag-checkered"></i> FINISHED</h2>
+                    </div>
+                </div>
+
+                <div class="slide-header" style="position: relative; z-index: 15;">
                     <span class="slide-tag">28 / Contact &amp; Reference</span>
                     <h3 class="slide-title">Project Genesis: Meet the MechRabot Team</h3>
                 </div>
@@ -3359,15 +3351,9 @@ generator_template = [ChatMessage.from_user(
                             </div>
                         </a>
 
-                        <!-- Cool Finished Animation Banner -->
-                        <div class="finished-banner">
-                            <div class="finished-glow"></div>
-                            <span class="finished-text">🎉 PRESENTATION FINISHED! 🏁</span>
-                            <div class="finished-sparkles">
-                                <span class="sparkle s1">✨</span>
-                                <span class="sparkle s2">⚙️</span>
-                                <span class="sparkle s3">🚀</span>
-                            </div>
+                        <!-- Summary tagline -->
+                        <div style="background:rgba(234,179,8,0.04); border:1px solid rgba(234,179,8,0.15); padding:10px 16px; border-radius:10px; text-align:center; font-size:10.5px; color:#fff; font-family:'Outfit'; font-weight:500;">
+                            ✨ Special thanks to all mentors and evaluation workshop mechanics!
                         </div>
                     </div>
                 </div>
@@ -3449,6 +3435,13 @@ generator_template = [ChatMessage.from_user(
             slideCounter.textContent = `${String(currentSlideIndex + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
             const pct = ((currentSlideIndex + 1) / slides.length) * 100;
             progressBar.style.width = `${pct}%`;
+
+            // Trigger or stop ending fireworks
+            if (currentSlideIndex === slides.length - 1) {
+                setTimeout(startFireworks, 200);
+            } else {
+                stopFireworks();
+            }
         }
 
         function nextSlide() {
@@ -4330,6 +4323,139 @@ generator_template = [ChatMessage.from_user(
 
         // ── Custom Added presentation controls & scaling ─────
         
+        let fireworksActive = false;
+        let fireworksTimeout = null;
+        let fireworksAnimationFrame = null;
+
+        function startFireworks() {
+            const canvas = document.getElementById('fireworks-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            // Adjust canvas size to parent slide
+            const parent = canvas.parentElement;
+            canvas.width = parent.clientWidth;
+            canvas.height = parent.clientHeight;
+            
+            const particles = [];
+            const rockets = [];
+            
+            class Rocket {
+                constructor(x, targetY) {
+                    this.x = x;
+                    this.y = canvas.height;
+                    this.targetY = targetY;
+                    this.speed = 4 + Math.random() * 4;
+                    this.color = `hsl(${Math.random() * 360}, 100%, 75%)`;
+                }
+                update() {
+                    this.y -= this.speed;
+                    return this.y <= this.targetY;
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                }
+            }
+
+            class Particle {
+                constructor(x, y, color) {
+                    this.x = x;
+                    this.y = y;
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = 2 + Math.random() * 6;
+                    this.vx = Math.cos(angle) * speed;
+                    this.vy = Math.sin(angle) * speed;
+                    this.gravity = 0.08;
+                    this.alpha = 1;
+                    this.decay = 0.015 + Math.random() * 0.02;
+                    this.color = color;
+                }
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.vy += this.gravity;
+                    this.alpha -= this.decay;
+                    return this.alpha <= 0;
+                }
+                draw() {
+                    ctx.save();
+                    ctx.globalAlpha = this.alpha;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, 2 + Math.random() * 2, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = this.color;
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+
+            function spawnRocket() {
+                if (!fireworksActive) return;
+                const x = 100 + Math.random() * (canvas.width - 200);
+                const targetY = 50 + Math.random() * (canvas.height / 2);
+                rockets.push(new Rocket(x, targetY));
+                
+                // Spawn new rocket every 300-600ms
+                fireworksTimeout = setTimeout(spawnRocket, 250 + Math.random() * 350);
+            }
+
+            function explode(x, y, color) {
+                const count = 50 + Math.floor(Math.random() * 30);
+                for (let i = 0; i < count; i++) {
+                    particles.push(new Particle(x, y, color));
+                }
+            }
+
+            // Stop any active instance first
+            stopFireworks();
+
+            fireworksActive = true;
+            spawnRocket();
+
+            function loop() {
+                if (!fireworksActive) return;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Update & draw rockets
+                for (let i = rockets.length - 1; i >= 0; i--) {
+                    const rocket = rockets[i];
+                    rocket.draw();
+                    if (rocket.update()) {
+                        explode(rocket.x, rocket.y, rocket.color);
+                        rockets.splice(i, 1);
+                    }
+                }
+
+                // Update & draw particles
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    const p = particles[i];
+                    p.draw();
+                    if (p.update()) {
+                        particles.splice(i, 1);
+                    }
+                }
+
+                fireworksAnimationFrame = requestAnimationFrame(loop);
+            }
+
+            loop();
+        }
+
+        function stopFireworks() {
+            fireworksActive = false;
+            if (fireworksTimeout) clearTimeout(fireworksTimeout);
+            if (fireworksAnimationFrame) cancelAnimationFrame(fireworksAnimationFrame);
+            const canvas = document.getElementById('fireworks-canvas');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
         function toggleSidebar() {
             const sidebar = document.querySelector('.sidebar');
             sidebar.classList.toggle('collapsed');
