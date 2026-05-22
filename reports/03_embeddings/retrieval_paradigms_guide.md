@@ -1,4 +1,5 @@
 # 🔍 The Complete Retrieval Paradigms Guide
+
 ## Dense · Sparse · ColBERT · Hybrid — and MechRabot Recommendations
 
 ---
@@ -25,11 +26,11 @@ Before any model architecture, understand the core retrieval question:
 
 The three paradigms answer this with fundamentally different mathematical strategies:
 
-| Paradigm | Core Math | Speed | Quality |
-|:---|:---|:---:|:---:|
-| **Sparse** | Exact term overlap (TF-IDF / BM25) | ⚡⚡⚡ | Medium |
-| **Dense** | Single vector cosine similarity | ⚡⚡ | High (semantic) |
-| **ColBERT** | Token-level MaxSim over matrix | ⚡ (re-rank) | Highest |
+| Paradigm    | Core Math                          |    Speed     |     Quality     |
+| :---------- | :--------------------------------- | :----------: | :-------------: |
+| **Sparse**  | Exact term overlap (TF-IDF / BM25) |    ⚡⚡⚡    |     Medium      |
+| **Dense**   | Single vector cosine similarity    |     ⚡⚡     | High (semantic) |
+| **ColBERT** | Token-level MaxSim over matrix     | ⚡ (re-rank) |     Highest     |
 
 ---
 
@@ -46,6 +47,7 @@ BM25(q, d) = Σᵢ IDF(tᵢ) · [ f(tᵢ,d) · (k₁+1) ] / [ f(tᵢ,d) + k₁·
 ```
 
 Where:
+
 - `IDF(tᵢ)` = Inverse Document Frequency — rare terms score higher
 - `f(tᵢ, d)` = term frequency in document `d`
 - `k₁` = saturation constant (~1.2–2.0), diminishing returns on repeated terms
@@ -64,19 +66,22 @@ Query: "timing belt torque 45 Nm"
 ```
 
 ### Strengths 💪
+
 - **Exact term matching**: `10.5 Nm` ≠ `10 Nm` — perfect for safety specs
 - **Zero training required**: purely statistical, works on day-1 data
 - **Blazing fast**: inverted index lookup is O(log N)
-- **Interpretable**: you can explain *why* a document ranked high
+- **Interpretable**: you can explain _why_ a document ranked high
 - **Part numbers**: `OEM-44305-06050` matched exactly, no ambiguity
 
 ### Weaknesses 😓
+
 - **Vocabulary mismatch**: "engine head gasket" ≠ "head sealing component"
 - **No semantics**: cannot infer meaning, only surface form
 - **Language boundary**: Arabic query misses English document unless same word appears
 - **Synonyms fail**: "oil" ≠ "lubricant" unless both are in the text
 
 ### Use Cases ✅
+
 - Legal document retrieval (exact clause numbers)
 - Medical records (ICD codes, drug names)
 - **Safety-critical specs** (torque values, tolerances)
@@ -124,8 +129,13 @@ loss = -log( exp(sim(q, pos)) / Σⱼ exp(sim(q, neg_j)) )
 ```
 
 Training data format:
+
 ```json
-{"query": "timing belt replacement", "positive": "Replace timing belt every 60,000 km...", "negative": "The fuel pump is located..."}
+{
+  "query": "timing belt replacement",
+  "positive": "Replace timing belt every 60,000 km...",
+  "negative": "The fuel pump is located..."
+}
 ```
 
 ### The Semantic Leap
@@ -148,25 +158,28 @@ This is the **semantic bridge** — the model maps conceptually equivalent conte
 
 Computing exact cosine similarity against millions of vectors is O(N). Instead:
 
-| Algorithm | Strategy | Trade-off |
-|:---|:---|:---|
-| **HNSW** (Qdrant default) | Hierarchical Navigable Small World graph | 99%+ recall, fast |
-| **IVF** (FAISS) | Cluster vectors, search nearest clusters | Tunable speed/recall |
-| **PQ** | Product Quantization — compress vectors | Memory efficient |
+| Algorithm                 | Strategy                                 | Trade-off            |
+| :------------------------ | :--------------------------------------- | :------------------- |
+| **HNSW** (Qdrant default) | Hierarchical Navigable Small World graph | 99%+ recall, fast    |
+| **IVF** (FAISS)           | Cluster vectors, search nearest clusters | Tunable speed/recall |
+| **PQ**                    | Product Quantization — compress vectors  | Memory efficient     |
 
 ### Strengths 💪
+
 - **Semantic understanding**: synonyms, paraphrases, concept mapping
 - **Cross-lingual**: multilingual models (BGE-M3) bridge Arabic ↔ English naturally
 - **ANN scales to billions**: sub-millisecond search at scale
 - **Context-aware**: entire sentence meaning captured, not just keywords
 
 ### Weaknesses 😓
+
 - **Exact match blind spot**: `10.5 Nm` and `10 Nm` can have very similar dense vectors
 - **Training dependency**: quality degrades on out-of-domain data
-- **Black box**: hard to explain *why* a document was ranked high
+- **Black box**: hard to explain _why_ a document was ranked high
 - **Embedding drift on rare terms**: OEM part codes may not generalize well
 
 ### Use Cases ✅
+
 - Semantic Q&A systems
 - Cross-lingual retrieval
 - Concept search ("find all procedures related to engine cooling")
@@ -179,7 +192,7 @@ Computing exact cosine similarity against millions of vectors is O(N). Instead:
 
 ### What it is
 
-ColBERT (**Col**umnar **BERT**) is the most sophisticated paradigm. Instead of compressing the full document into *one* vector, ColBERT generates **one vector per token**. This preserves token-level granularity, enabling more precise matching.
+ColBERT (**Col**umnar **BERT**) is the most sophisticated paradigm. Instead of compressing the full document into _one_ vector, ColBERT generates **one vector per token**. This preserves token-level granularity, enabling more precise matching.
 
 ### Architecture: Late Interaction
 
@@ -207,23 +220,25 @@ ColBERT_score(q, d) = Σᵢ max_j ( qᵢ · dⱼᵀ )
 ```
 
 This means:
+
 - Each query token **independently** finds its best matching document token
 - Even if "timing" appears in position 5 of the document, it will be found by the "timing" query token
 - Result: **soft, positional-invariant, exact-ish matching**
 
 ### Why This Outperforms Both Dense and Sparse
 
-| Scenario | Sparse | Dense | ColBERT |
-|:---|:---:|:---:|:---:|
-| Exact keyword match | ✅ | ❌ | ✅ |
-| Semantic synonym match | ❌ | ✅ | ✅ |
-| Part-of-word match ("Nm" ↔ "torque Nm value") | ❌ | 🟡 | ✅ |
-| Query token gets lost in dense compression | N/A | ❌ | ✅ |
-| Arabic-English code switching in same query | ❌ | 🟡 | ✅ |
+| Scenario                                      | Sparse | Dense | ColBERT |
+| :-------------------------------------------- | :----: | :---: | :-----: |
+| Exact keyword match                           |   ✅   |  ❌   |   ✅    |
+| Semantic synonym match                        |   ❌   |  ✅   |   ✅    |
+| Part-of-word match ("Nm" ↔ "torque Nm value") |   ❌   |  🟡   |   ✅    |
+| Query token gets lost in dense compression    |  N/A   |  ❌   |   ✅    |
+| Arabic-English code switching in same query   |   ❌   |  🟡   |   ✅    |
 
 ### Storage Consideration: The ColBERT Tax
 
 Every document token becomes a vector. For a 256-token chunk:
+
 - **Dense**: 1 × 1024 floats = **4 KB per chunk**
 - **ColBERT** (128d per token): 256 × 128 floats = **131 KB per chunk**
 
@@ -232,9 +247,11 @@ For 2,790 MechRabot chunks: Dense = ~11 MB vs ColBERT = ~366 MB. Manageable, but
 ### Two Deployment Modes
 
 #### Mode A: Full ColBERT (Index + Search)
+
 Indexes all document token vectors. Used in `PLAID` engine. Best recall, highest storage.
 
 #### Mode B: ColBERT as Re-ranker (Most Common)
+
 ```
 1. Retrieve top-100 candidates with Dense (fast ANN)
 2. Re-rank top-100 using ColBERT MaxSim (precise, small set)
@@ -244,6 +261,7 @@ Indexes all document token vectors. Used in `PLAID` engine. Best recall, highest
 This is the **dominant production pattern** — get speed from dense, get precision from ColBERT.
 
 ### Strengths 💪
+
 - **Best MRR/NDCG** on most benchmarks (BEIR, MTEB)
 - **No information collapse**: every token retains its own signal
 - **Handles abbreviations**: "N·m" token matched to context perfectly
@@ -251,12 +269,14 @@ This is the **dominant production pattern** — get speed from dense, get precis
 - **Code-switching**: Arabic-English mixed queries handled at token level
 
 ### Weaknesses 😓
+
 - **Storage**: 30–100× more than dense
 - **Raw search is slow**: must compute MaxSim during query, not precomputed cosine
 - **Typically used as re-ranker**, not first-stage retriever
 - **Training complexity**: requires curated positive/negative pairs
 
 ### Use Cases ✅
+
 - Re-ranking top-K dense results for maximum precision
 - Technical documentation retrieval
 - **Safety-critical specs** where token-level precision matters
@@ -274,7 +294,7 @@ No single paradigm is universally best. The sweet spot is **fusing multiple sign
 Query: "سير كاتينة torque 45 nm"
 
 Sparse gives: chunks with exact "45 nm"          → precision ✅
-Dense gives:  chunks about timing belt in Arabic  → recall ✅  
+Dense gives:  chunks about timing belt in Arabic  → recall ✅
 ColBERT gives: token-level verification of specs  → safety ✅
 ```
 
@@ -287,17 +307,18 @@ RRF_score(d) = Σₛ 1 / (k + rank_s(d))
 ```
 
 Where:
+
 - `rank_s(d)` = the rank of document `d` in retrieval system `s`
 - `k` = smoothing constant (typically 60)
 - Sum is over all retrieval systems (dense, sparse, colbert)
 
 **Example:**
 
-| Chunk | Dense Rank | Sparse Rank | RRF Score |
-|:---|:---:|:---:|:---:|
-| "Timing belt torque 45 Nm" | 3 | 1 | 1/(60+3) + 1/(60+1) = **0.032** |
-| "Timing belt synchronizes crankshaft..." | 1 | 8 | 1/(60+1) + 1/(60+8) = **0.031** |
-| "Fuel pump pressure 3.5 bar" | 5 | 12 | 1/(60+5) + 1/(60+12) = **0.015** |
+| Chunk                                    | Dense Rank | Sparse Rank |            RRF Score            |
+| :--------------------------------------- | :--------: | :---------: | :-----------------------------: |
+| "Timing belt torque 45 Nm"               |     3      |      1      | 1/(60+3) + 1/(60+1) =**0.032**  |
+| "Timing belt synchronizes crankshaft..." |     1      |      8      | 1/(60+1) + 1/(60+8) =**0.031**  |
+| "Fuel pump pressure 3.5 bar"             |     5      |     12      | 1/(60+5) + 1/(60+12) =**0.015** |
 
 RRF naturally promotes documents that **rank well in multiple systems**.
 
@@ -308,6 +329,7 @@ final_score = α · dense_score + β · sparse_score + γ · colbert_score
 ```
 
 Requires calibration:
+
 - `α + β + γ = 1`
 - Tune per query type (spec queries → boost β, semantic queries → boost α)
 
@@ -436,13 +458,13 @@ output['colbert_vecs']     # shape: [1, T, 128]
 
 ### Performance vs. Specialist Models
 
-| Model | Dense MTEB | Sparse MAP | ColBERT nDCG | Params |
-|:---|:---:|:---:|:---:|:---:|
-| BM25 (statistical) | — | 23.1 | — | 0 |
-| E5-large-v2 | 64.2 | — | — | 335M |
-| SPLADE++ | — | 29.8 | — | 110M |
-| ColBERT v2 | — | — | 69.8 | 110M |
-| **BGE-M3** | **64.0** | **28.3** | **65.1** | **568M** |
+| Model              | Dense MTEB | Sparse MAP | ColBERT nDCG |  Params  |
+| :----------------- | :--------: | :--------: | :----------: | :------: |
+| BM25 (statistical) |     —      |    23.1    |      —       |    0     |
+| E5-large-v2        |    64.2    |     —      |      —       |   335M   |
+| SPLADE++           |     —      |    29.8    |      —       |   110M   |
+| ColBERT v2         |     —      |     —      |     69.8     |   110M   |
+| **BGE-M3**         |  **64.0**  |  **28.3**  |   **65.1**   | **568M** |
 
 BGE-M3 is not the #1 specialist in any single category but is **top-tier in all three simultaneously**.
 
@@ -469,11 +491,11 @@ BGE-M3 is not the #1 specialist in any single category but is **top-tier in all 
 
 ### Storage Comparison (MechRabot scale: 2,790 chunks)
 
-| Vector Type | Dimensions | Size per chunk | Total (2,790 chunks) |
-|:---|:---:|:---:|:---:|
-| Dense | 1,024 | ~4 KB | ~11 MB |
-| Sparse (BGE-M3) | ~30K (but sparse!) | ~0.5–2 KB | ~5 MB |
-| ColBERT (avg 150 tokens) | 150 × 128 | ~77 KB | ~215 MB |
+| Vector Type              |     Dimensions     | Size per chunk | Total (2,790 chunks) |
+| :----------------------- | :----------------: | :------------: | :------------------: |
+| Dense                    |       1,024        |     ~4 KB      |        ~11 MB        |
+| Sparse (BGE-M3)          | ~30K (but sparse!) |   ~0.5–2 KB    |        ~5 MB         |
+| ColBERT (avg 150 tokens) |     150 × 128      |     ~77 KB     |       ~215 MB        |
 
 **MechRabot is small enough to store ALL THREE** in Qdrant without issue.
 
@@ -486,10 +508,12 @@ BGE-M3 is not the #1 specialist in any single category but is **top-tier in all 
 MechRabot has **five distinct query archetypes**, each requiring different retrieval emphasis:
 
 #### Archetype 1: 🔴 Safety-Critical Spec Query
+
 ```
 User: "What is the cylinder head bolt torque?"
 Arabic: "عزم ربط برغي رأس السيلندر كام؟"
 ```
+
 **Risk**: Dense retrieval alone may return "68 Nm" instead of "65 Nm" — catastrophic
 
 **Strategy**: `Sparse FIRST (0.6) + Dense (0.3) + ColBERT re-rank (final check)`
@@ -497,10 +521,12 @@ Arabic: "عزم ربط برغي رأس السيلندر كام؟"
 ---
 
 #### Archetype 2: 🟡 Procedural/Diagnostic Query
+
 ```
 User: "How do I replace the timing belt on this engine?"
 Arabic: "ازاي أغير سير الكاتينة؟"
 ```
+
 **Risk**: None safety-critical, need full procedure steps
 
 **Strategy**: `Dense FIRST (0.6) + Sparse (0.2) + ColBERT re-rank + chunk linked-list fetch`
@@ -510,9 +536,11 @@ The **linked-list chain** (`previous_chunk_id` / `next_chunk_id`) is the killer 
 ---
 
 #### Archetype 3: 🟢 Cross-Lingual Concept Query
+
 ```
 User: "سير كاتينة" or "جلبة مقص" or "بلوف مكيف"
 ```
+
 **Risk**: BM25 returns zero results (no word overlap with English manual)
 
 **Strategy**: `Dense DOMINANT (0.8) + ColBERT re-rank (0.2)` — fine-tuned BGE-M3 handles this natively
@@ -520,9 +548,11 @@ User: "سير كاتينة" or "جلبة مقص" or "بلوف مكيف"
 ---
 
 #### Archetype 4: 🔵 Part Code / OEM Number Query
+
 ```
 User: "OEM 44305-06050 specs"
 ```
+
 **Risk**: Dense embedding may generalize nearby part codes
 
 **Strategy**: `Sparse DOMINANT (0.7) + ColBERT token match (0.3)` — exact token matching is essential
@@ -530,9 +560,11 @@ User: "OEM 44305-06050 specs"
 ---
 
 #### Archetype 5: 🟣 Code-Switching Mixed Query (Arabic + English)
+
 ```
 User: "سير كاتينة timing belt 45 Nm replace procedure"
 ```
+
 **Risk**: None of the pure approaches handles ALL signals
 
 **Strategy**: `Full Hybrid Equal (Dense 0.4 + Sparse 0.35 + ColBERT 0.25)` + query language detection
@@ -600,11 +632,11 @@ def detect_query_type(query: str) -> QueryWeights:
 
 
 def mechrabot_hybrid_search(
-    client, model, query: str, 
+    client, model, query: str,
     section_filter=None, top_k=10
 ):
     weights = detect_query_type(query)
-    
+
     # Encode query with BGE-M3 (all three in one call)
     encoded = model.encode(
         [query],
@@ -612,7 +644,7 @@ def mechrabot_hybrid_search(
         return_sparse=True,
         return_colbert_vecs=True
     )
-    
+
     dense_vec = encoded['dense_vecs'][0].tolist()
     sparse_vec = encoded['lexical_weights'][0]   # dict {token_id: weight}
     colbert_vecs = encoded['colbert_vecs'][0]    # [T, 128]
@@ -660,7 +692,7 @@ def mechrabot_hybrid_search(
     if weights.colbert_rerank:
         reranked = colbert_rerank(stage1_results, colbert_vecs, model)
         return reranked[:top_k]
-    
+
     return stage1_results[:top_k]
 ```
 
@@ -672,31 +704,31 @@ After finding the best chunk, expand context via the linked list:
 def expand_with_context(client, chunk, window=1):
     """Fetch neighboring chunks without an extra vector search"""
     neighbors = []
-    
+
     prev_id = chunk.payload['meta'].get('previous_chunk_id')
     next_id = chunk.payload['meta'].get('next_chunk_id')
-    
+
     if prev_id:
         prev = client.retrieve("mechrabot_v3", ids=[prev_id], with_payload=True)
         neighbors.extend(prev)
-    
+
     neighbors.append(chunk)
-    
+
     if next_id:
         nxt = client.retrieve("mechrabot_v3", ids=[next_id], with_payload=True)
         neighbors.extend(nxt)
-    
+
     return neighbors
 ```
 
 ### Fine-Tuning Impact on Retrieval Modes
 
-| Fine-Tuning Goal | Affected Vector | Expected Gain |
-|:---|:---|:---|
-| Arabic slang → English bridge | **Dense** (CLS) | +30–50% recall on Arabic queries |
-| Part code recognition | **Sparse** + **ColBERT** | Better token weights for OEM codes |
-| Spec number precision | **Sparse** (SPLADE weights) | Stronger IDF for "Nm", "bar" etc. |
-| Section context (section_path) | **Dense** | Better hierarchical query understanding |
+| Fine-Tuning Goal               | Affected Vector             | Expected Gain                           |
+| :----------------------------- | :-------------------------- | :-------------------------------------- |
+| Arabic slang → English bridge  | **Dense** (CLS)             | +30–50% recall on Arabic queries        |
+| Part code recognition          | **Sparse** + **ColBERT**    | Better token weights for OEM codes      |
+| Spec number precision          | **Sparse** (SPLADE weights) | Stronger IDF for "Nm", "bar" etc.       |
+| Section context (section_path) | **Dense**                   | Better hierarchical query understanding |
 
 Use `FlagEmbedding` unified fine-tuning so **all three heads benefit** from your training data simultaneously.
 
@@ -711,7 +743,7 @@ from qdrant_client.models import PointStruct, SparseVector
 
 def upsert_mechrabot_chunk(client, model, chunk: dict):
     text = chunk['content']
-    
+
     # Single BGE-M3 call → all vectors
     encoded = model.encode(
         [text],
@@ -720,7 +752,7 @@ def upsert_mechrabot_chunk(client, model, chunk: dict):
         return_colbert_vecs=True,
         max_length=512
     )
-    
+
     point = PointStruct(
         id=chunk['chunk_id'],
         vector={
@@ -730,17 +762,17 @@ def upsert_mechrabot_chunk(client, model, chunk: dict):
         # Sparse goes separately
         payload=chunk['meta']
     )
-    
+
     # Qdrant requires sparse vectors in a separate call or via named vector syntax
     client.upsert(
         collection_name="mechrabot_v3",
         points=[point]
     )
-    
+
     # Update sparse separately (current Qdrant API)
     sparse_indices = list(encoded['lexical_weights'][0].keys())
     sparse_values  = list(encoded['lexical_weights'][0].values())
-    
+
     client.update_vectors(
         collection_name="mechrabot_v3",
         points=[
@@ -786,4 +818,4 @@ The combination of these five strategies positions MechRabot at the frontier of 
 
 ---
 
-*Guide generated for MechRabot project — 2026-03-29*
+_Guide generated for MechRabot project — 2026-03-29_
