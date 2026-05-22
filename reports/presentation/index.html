@@ -53,7 +53,17 @@
             flex-direction: column;
             padding: 24px;
             z-index: 100;
-            transition: transform 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            opacity: 1;
+        }
+
+        .sidebar.collapsed {
+            width: 0px;
+            padding-left: 0px;
+            padding-right: 0px;
+            opacity: 0;
+            pointer-events: none;
+            border-right-color: transparent;
         }
 
         .logo-section {
@@ -726,6 +736,200 @@
             box-shadow: 0 0 15px rgba(239, 68, 68, 0.25);
             color: #ef4444;
         }
+
+        /* ── SOTA Badge & Animation ───────────────────── */
+        .sota-badge {
+            position: absolute;
+            top: -12px;
+            right: -12px;
+            background: linear-gradient(135deg, #000 0%, #111 50%, var(--primary) 100%);
+            border: 2px solid var(--primary);
+            border-radius: 30px;
+            padding: 6px 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 0 20px var(--primary-glow), inset 0 0 10px rgba(234, 179, 8, 0.2);
+            z-index: 10;
+            animation: floatBadge 3s infinite ease-in-out;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .sota-text {
+            font-family: 'Outfit', sans-serif;
+            font-size: 11.5px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: #fff;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            text-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+        }
+
+        .sota-text i {
+            color: var(--primary);
+            font-size: 12px;
+            animation: rotateSparkle 4s infinite linear;
+            display: inline-block;
+        }
+
+        .sota-glow {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+            transition: 0.5s;
+            animation: shineSweep 3s infinite ease-in-out;
+        }
+
+        @keyframes floatBadge {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-6px) scale(1.05); }
+        }
+
+        @keyframes rotateSparkle {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes shineSweep {
+            0% { left: -100%; }
+            50%, 100% { left: 100%; }
+        }
+
+        /* ── Custom Theme Scrollbars ────────────────────── */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(11, 12, 16, 0.45);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(234, 179, 8, 0.25);
+            border: 1px solid rgba(234, 179, 8, 0.45);
+            border-radius: 10px;
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(234, 179, 8, 0.6);
+            border-color: var(--primary);
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+        .slide-list {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(234, 179, 8, 0.25) rgba(11, 12, 16, 0.45);
+        }
+
+        /* ── Floating Sidebar Toggle ───────────────────── */
+        .sidebar-toggle {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 150;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+            backdrop-filter: blur(10px);
+            box-shadow: var(--glass-shadow);
+        }
+        .sidebar-toggle:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+            transform: translateY(-2px);
+        }
+        .sidebar-toggle:active {
+            transform: translateY(0);
+        }
+
+        /* ── Glassmorphic Image Preview Modal ─────────────── */
+        .preview-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(7, 8, 10, 0.96);
+            backdrop-filter: blur(16px);
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            opacity: 0;
+            transition: opacity 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .preview-modal.show {
+            display: flex;
+            opacity: 1;
+        }
+        .preview-modal-content {
+            max-width: 90%;
+            max-height: 82%;
+            border-radius: 18px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 24px 60px rgba(0,0,0,0.85);
+            transform: scale(0.92);
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            object-fit: contain;
+        }
+        .preview-modal.show .preview-modal-content {
+            transform: scale(1);
+        }
+        .preview-modal-close {
+            position: absolute;
+            top: 24px;
+            right: 32px;
+            color: var(--text-main);
+            font-size: 26px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--glass-border);
+        }
+        .preview-modal-close:hover {
+            color: var(--primary);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+            transform: rotate(90deg);
+        }
+        .preview-modal-caption {
+            margin-top: 20px;
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 15px;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            padding: 8px 24px;
+            border-radius: 30px;
+            backdrop-filter: blur(8px);
+        }
     </style>
 </head>
 <body>
@@ -748,6 +952,11 @@
     <!-- Main Slides Viewport -->
     <div class="presentation-container">
         
+        <!-- Sidebar Collapse Toggle Button -->
+        <button class="sidebar-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+        
         <div class="fullscreen-hint">
             <i class="fa-solid fa-expand"></i> Press <kbd style="background:#222; padding:2px 4px; border-radius:3px;">F</kbd> for Fullscreen
         </div>
@@ -758,7 +967,14 @@
             <div class="slide active" data-slide-name="Title Cover">
                 <div class="cover-content">
                     <!-- Central Core Image (Large, Majestic) -->
-                    <img src="pngs/Gemini_Generated_Image_rhsa2jrhsa2jrhsa.png" alt="MechRabot AI Protocols" style="width: 420px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 16px 48px rgba(0, 0, 0, 0.65), 0 0 25px rgba(234, 179, 8, 0.15); margin-bottom: 24px; animation: pulseGlow 4s infinite ease-in-out;">
+                    <div style="position: relative; margin-bottom: 24px; display: inline-block;">
+                        <img src="pngs/Gemini_Generated_Image_rhsa2jrhsa2jrhsa.png" alt="MechRabot AI Protocols" style="width: 420px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 16px 48px rgba(0, 0, 0, 0.65), 0 0 25px rgba(234, 179, 8, 0.15); animation: pulseGlow 4s infinite ease-in-out;">
+                        <!-- Glowing SOTA Ribbon/Badge -->
+                        <div class="sota-badge">
+                            <span class="sota-glow"></span>
+                            <span class="sota-text"><i class="fa-solid fa-wand-magic-sparkles"></i> SOTA AI</span>
+                        </div>
+                    </div>
                     
                     <h2 class="cover-title">MECHRABOT</h2>
                     <p class="cover-subtitle">Economical Hybrid-RAG Engine for Complex Industrial &amp; Maintenance Technical Documentation</p>
@@ -1023,7 +1239,97 @@
                 </div>
             </div>
 
-            <!-- Slide 6: Chunking Visualizer -->
+            <!-- Slide 6: Model Service Manual Case Study -->
+            <div class="slide" data-slide-name="Service Manual Example">
+                <div class="slide-header">
+                    <span class="slide-tag">05 / Case Study</span>
+                    <h3 class="slide-title">Field Benchmark: The Chery A3/M11 Service Manual</h3>
+                </div>
+                <div class="slide-content split-columns">
+                    <!-- Left Column: Manual Properties & RAG Challenge -->
+                    <div class="card card-accent" style="display:flex; flex-direction:column; gap:12px; justify-content:space-between; padding:20px;">
+                        <div>
+                            <h4 style="font-family:'Outfit'; font-size:15px; color:var(--primary); margin:0 0 8px 0;"><i class="fa-solid fa-book-open-reader"></i> The Ultimate Technical Stress-Test</h4>
+                            <p style="font-size:12.5px; color:var(--text-muted); line-height:1.5; margin:0 0 16px 0;">
+                                To evaluate the extreme limits of MECHRABOT, we selected a highly complex, 1,300+ page OEM technical document: the **2009 Chery A3/Orinoco M11 Service Manual**.
+                            </p>
+                            
+                            <ul class="bullet-list" style="gap:10px; font-size:12px; list-style:none; padding:0;">
+                                <li class="bullet-item">
+                                    <i class="fa-solid fa-copy" style="color:var(--primary); font-size:14px;"></i>
+                                    <div>
+                                        <h5 style="color:#fff; margin:0 0 2px 0;">1,300+ Dense Engineering Pages</h5>
+                                        <p style="font-size:11px; margin:0; line-height:1.35;">Packed with high-density exploded component diagrams, electrical wiring paths, and multi-layered charts.</p>
+                                    </div>
+                                </li>
+                                <li class="bullet-item">
+                                    <i class="fa-solid fa-list-check" style="color:#3b82f6; font-size:14px;"></i>
+                                    <div>
+                                        <h5 style="color:#3b82f6; margin:0 0 2px 0;">Multi-System Diagnostic Layers</h5>
+                                        <p style="font-size:11px; margin:0; line-height:1.35;">Covers complete ACTECO engine specs, mechanical tolerances, OBD trouble codes, and assembly clearances.</p>
+                                    </div>
+                                </li>
+                                <li class="bullet-item">
+                                    <i class="fa-solid fa-triangle-exclamation" style="color:#f59e0b; font-size:14px;"></i>
+                                    <div>
+                                        <h5 style="color:#f59e0b; margin:0 0 2px 0;">High-Stakes Precision Tolerances</h5>
+                                        <p style="font-size:11px; margin:0; line-height:1.35;">A difference between 10 N·m and 10.5 N·m torque specs is the difference between correct mounting and stripped cylinder threads.</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Next Slide Callout: Transition to chunking -->
+                        <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.2); padding: 12px; border-radius: 8px; font-size: 11px; line-height: 1.4; color: var(--text-muted); display:flex; align-items:center; gap:8px;">
+                            <i class="fa-solid fa-circle-arrow-right" style="color:var(--primary); font-size:16px;"></i>
+                            <span><strong>Next Up:</strong> Let's see how we visually chunk these dense manual pages to preserve layout context!</span>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Explorer Specs & Target Coverage Grid -->
+                    <div style="display:flex; flex-direction:column; gap:16px; justify-content:center; align-items:stretch;">
+                        <div class="card" style="background: rgba(11, 12, 16, 0.4); border: 1px solid var(--glass-border); padding: 20px; border-radius: 16px; display:flex; flex-direction:column; gap:12px;">
+                            <h4 style="font-family:'Outfit'; font-size:14px; color:var(--secondary); margin:0;"><i class="fa-solid fa-car-rear"></i> Model Scope Coverage</h4>
+                            
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                                <!-- Scope Unit 1 -->
+                                <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); padding:10px; border-radius:8px;">
+                                    <span style="font-size:10px; color:var(--primary); font-family:'Fira Code'; font-weight:700;">ENGINE SYSTEMS</span>
+                                    <h6 style="color:#fff; font-size:11px; margin:4px 0 2px 0;">ACTECO 1.6L / 1.8L / 2.0L</h6>
+                                    <p style="font-size:9.5px; color:var(--text-muted); margin:0;">Torque constraints, head clearance logs, valve timings.</p>
+                                </div>
+                                
+                                <!-- Scope Unit 2 -->
+                                <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); padding:10px; border-radius:8px;">
+                                    <span style="font-size:10px; color:var(--secondary); font-family:'Fira Code'; font-weight:700;">TRANSMISSIONS</span>
+                                    <h6 style="color:#fff; font-size:11px; margin:4px 0 2px 0;">QR519 MT / QR019 CVT</h6>
+                                    <p style="font-size:9.5px; color:var(--text-muted); margin:0;">Gear tolerances, fluid limits, solenoids circuit values.</p>
+                                </div>
+
+                                <!-- Scope Unit 3 -->
+                                <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); padding:10px; border-radius:8px;">
+                                    <span style="font-size:10px; color:#10b981; font-family:'Fira Code'; font-weight:700;">CHASSIS &amp; BRAKES</span>
+                                    <h6 style="color:#fff; font-size:11px; margin:4px 0 2px 0;">ABS / Steering / Suspension</h6>
+                                    <p style="font-size:9.5px; color:var(--text-muted); margin:0;">Brake pad clearances, caliper tolerances, pressure levels.</p>
+                                </div>
+
+                                <!-- Scope Unit 4 -->
+                                <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); padding:10px; border-radius:8px;">
+                                    <span style="font-size:10px; color:#a855f7; font-family:'Fira Code'; font-weight:700;">ELECTRICAL BUS</span>
+                                    <h6 style="color:#fff; font-size:11px; margin:4px 0 2px 0;">CAN-Bus / Wiring Harness</h6>
+                                    <p style="font-size:9.5px; color:var(--text-muted); margin:0;">Fuses layout, harness pins resistance values, sensor routes.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="background:rgba(59,130,246,0.06); border:1px solid rgba(59,130,246,0.15); padding:10px 16px; border-radius:30px; text-align:center; font-size:11px; color:#fff; display:flex; align-items:center; justify-content:center; gap:8px;">
+                            <span>⚙️</span> <strong>Real-World Mechanical Sandbox</strong> — Tested on live workshop platforms.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 7: Chunking Visualizer -->
             <div class="slide" data-slide-name="Chunking Demo">
                 <div class="slide-header">
                     <span class="slide-tag">05 / Chunking Visualizer</span>
@@ -1692,8 +1998,8 @@ enriched = chunker.contextualize(chunk=chunk)
                         <div style="background: #0f131a; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; font-family:'Fira Code'; font-size:9.5px; color: var(--text-muted); display:flex; flex-direction:column; gap:4px; line-height:1.45;">
                             <div><span style="color:#10b981;">$</span> ranx evaluate baseline_qrels.json bge_m3_runs.json</div>
                             <div style="color:rgba(255,255,255,0.5);">CRITICAL LANGUAGE GAP IDENTIFIED:</div>
-                            <div style="color:#ef4444; padding-left: 10px;"><i class="fa-solid fa-triangle-exclamation"></i> "الكاتينة" (timing belt) &rarr; similarity: 0.18</div>
-                            <div style="color:#ef4444; padding-left: 10px;"><i class="fa-solid fa-triangle-exclamation"></i> "الكرمنك" (crankshaft) &rarr; similarity: 0.12</div>
+                            <div style="color:#ef4444; padding-left: 10px;"><i class="fa-solid fa-triangle-exclamation"></i> <span style="color:#f59e0b; font-weight:600;">"الكاتينة"</span> (timing belt) &rarr; similarity: 0.18</div>
+                            <div style="color:#ef4444; padding-left: 10px;"><i class="fa-solid fa-triangle-exclamation"></i> <span style="color:#f59e0b; font-weight:600;">"الكرمنك"</span> (crankshaft) &rarr; similarity: 0.12</div>
                             <div style="color:var(--primary); padding-left: 10px;"><i class="fa-solid fa-lightbulb"></i> Verdict: Fine-tuning or Query Refiner is required!</div>
                         </div>
                     </div>
@@ -1892,67 +2198,200 @@ enriched = chunker.contextualize(chunk=chunk)
             <div class="slide" data-slide-name="Slang Query Refiner">
                 <div class="slide-header">
                     <span class="slide-tag">15 / Query Enrichment</span>
-                    <h3 class="slide-title">Arabic-English Slang translation Refiner</h3>
+                    <h3 class="slide-title">1st Stage: Core Translation &amp; Query Refiner Prompt</h3>
                 </div>
                 <div class="slide-content split-columns">
-                    <div class="card card-accent">
-                        <ul class="bullet-list">
-                            <li class="bullet-item">
-                                <i class="fa-solid fa-globe"></i>
-                                <div>
-                                    <h4>The Colloquial Slang Gap</h4>
-                                    <p>Middle Eastern mechanics use heavily localized technical terms and slang (e.g., Egyptian mechanic dialect) that has zero overlaps in English manuals.</p>
+                    <!-- Left: Prompt Architecture & Guidelines -->
+                    <div class="card card-accent" style="display:flex; flex-direction:column; gap:12px; justify-content:space-between;">
+                        <div>
+                            <p style="font-size:13.5px; color:var(--text-muted); line-height:1.5; margin:0 0 12px 0;">
+                                The first stage uses a customized, high-precision translation agent template defined in <code>app/core/prompt_refiner.py</code> to normalize mechanic dialect before embedding.
+                            </p>
+                            
+                            <div style="display:flex; flex-direction:column; gap:8px;">
+                                <!-- Directive 1 -->
+                                <div style="display:flex; align-items:flex-start; gap:10px; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.04); padding:8px 12px; border-radius:6px;">
+                                    <i class="fa-solid fa-language" style="color:var(--primary); font-size:12px; margin-top:2px;"></i>
+                                    <div>
+                                        <h4 style="font-family:'Outfit'; font-size:12px; color:#fff; margin:0 0 2px 0;">Dynamic Slang Translation</h4>
+                                        <p style="font-size:10.5px; color:var(--text-muted); margin:0; line-height:1.3;">Converts colloquial Egyptian mechanic dialect (e.g., "كاتينة", "بوجيهات") directly to standard English terms.</p>
+                                    </div>
                                 </div>
-                            </li>
-                            <li class="bullet-item">
-                                <i class="fa-solid fa-bolt"></i>
-                                <div>
-                                    <h4>Refinement Agent Layer</h4>
-                                    <p>Translates Arabic slang to clean English, normalizes varying engineering jargon, retains specs/units, and strips conversational filler before embedding.</p>
+                                <!-- Directive 2 -->
+                                <div style="display:flex; align-items:flex-start; gap:10px; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.04); padding:8px 12px; border-radius:6px;">
+                                    <i class="fa-solid fa-bullseye" style="color:var(--secondary); font-size:12px; margin-top:2px;"></i>
+                                    <div>
+                                        <h4 style="font-family:'Outfit'; font-size:12px; color:#fff; margin:0 0 2px 0;">Strict OEM Vocabulary Mapping</h4>
+                                        <p style="font-size:10.5px; color:var(--text-muted); margin:0; line-height:1.3;">Maps alternative tech phrasings to the precise engineering vocabulary of official Chery M11 service manuals.</p>
+                                    </div>
                                 </div>
-                            </li>
-                            <li class="bullet-item">
-                                <i class="fa-solid fa-coins"></i>
-                                <div>
-                                    <h4>Extremely Economical</h4>
-                                    <p>Uses a lightweight, low-temperature prompt configuration with DeepSeek-v4-Flash, costing less than $0.002 per query.</p>
+                                <!-- Directive 3 -->
+                                <div style="display:flex; align-items:flex-start; gap:10px; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.04); padding:8px 12px; border-radius:6px;">
+                                    <i class="fa-solid fa-filter" style="color:#10b981; font-size:12px; margin-top:2px;"></i>
+                                    <div>
+                                        <h4 style="font-family:'Outfit'; font-size:12px; color:#10b981; margin:0 0 2px 0;">Precision-Retaining Zero-Bloat Constraint</h4>
+                                        <p style="font-size:10.5px; color:var(--text-muted); margin:0; line-height:1.3;">Strips conversational fillers and question words. Retains exact values (DTCs, N·m, mm) and outputs ONLY raw keywords for embedding.</p>
+                                    </div>
                                 </div>
-                            </li>
-                        </ul>
+                            </div>
+                        </div>
+
+                        <div style="background: rgba(59, 130, 246, 0.08); border-left: 3px solid var(--secondary); padding: 12px; border-radius: 8px; font-size: 10.5px; line-height: 1.5; color: var(--text-muted); box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+                            <span style="color:var(--secondary); font-weight:700;"><i class="fa-solid fa-graduation-cap"></i> Prompt Engineering Class:</span> <strong style="color: var(--secondary); background: rgba(59, 130, 246, 0.15); padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(59, 130, 246, 0.3); box-shadow: 0 0 12px rgba(59, 130, 246, 0.25); display: inline-block; margin-top: 4px; font-size: 11px;">Zero-Shot Persona-Guided Constraint Prompting</strong><div style="margin-top: 8px;">Leverages a highly optimized dynamic system role, strict directive compliance, and absolute zero-bloat format constraints.</div>
+                        </div>
                     </div>
 
-                    <!-- Interactive Arabic Slang Simulator -->
-                    <div class="card refiner-demo-grid">
-                        <div style="display: flex; flex-direction: column; gap: 8px;">
-                            <h4 style="font-family:'Outfit'; font-size: 15px; margin-bottom: 8px; color: var(--secondary);">Click to Simulate Query</h4>
-                            <button class="demo-input-btn" onclick="refineSlang('katina')">
-                                <i class="fa-solid fa-chevron-left"></i>
-                                <span>سير كاتينة</span>
-                            </button>
-                            <button class="demo-input-btn" onclick="refineSlang('genat')">
-                                <i class="fa-solid fa-chevron-left"></i>
-                                <span>مقاس الجنط</span>
-                            </button>
-                            <button class="demo-input-btn" onclick="refineSlang('bogihat')">
-                                <i class="fa-solid fa-chevron-left"></i>
-                                <span>البوجيهات خلوصها كام</span>
-                            </button>
+                    <!-- Right Column: Interactive Simulator & Live Prompt Output -->
+                    <div style="background: rgba(11, 12, 16, 0.6); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); justify-content: space-between;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px;">
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <i class="fa-solid fa-signature" style="color: var(--primary); font-size:13px;"></i>
+                                <span style="font-size: 11px; font-family: 'Fira Code', monospace; color: #fff; font-weight:700;">prompt_refiner.py Live Trace</span>
+                            </div>
+                            <span style="font-size: 9px; font-family: 'Fira Code'; color: var(--secondary);"><i class="fa-solid fa-terminal"></i> Agent Simulator</span>
                         </div>
-                        
-                        <div class="refiner-result-panel">
-                            <h4 style="font-family:'Outfit'; font-size:15px; color: var(--primary);">Refined VDB Search Query</h4>
-                            <div class="refiner-row">
-                                <span class="refiner-label">Literal Meaning</span>
-                                <span class="refiner-val" id="ref-literal">-</span>
+
+                        <!-- Interactive Arabic Slang Simulator -->
+                        <div class="refiner-demo-grid" style="display:grid; grid-template-columns: 1fr 1.2fr; gap:12px; border:none; padding:0; background:transparent;">
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <h4 style="font-family:'Outfit'; font-size: 13.5px; margin-bottom: 4px; color: var(--secondary); margin-top:0;">Click to Refine:</h4>
+                                <button class="demo-input-btn" onclick="refineSlang('katina')" style="padding: 10px; font-size:11px;">
+                                    <i class="fa-solid fa-chevron-left"></i>
+                                    <span style="color:#f59e0b; font-weight:600;">سير كاتينة</span>
+                                </button>
+                                <button class="demo-input-btn" onclick="refineSlang('genat')" style="padding: 10px; font-size:11px;">
+                                    <i class="fa-solid fa-chevron-left"></i>
+                                    <span style="color:#f59e0b; font-weight:600;">مقاس الجنط</span>
+                                </button>
+                                <button class="demo-input-btn" onclick="refineSlang('bogihat')" style="padding: 10px; font-size:11px;">
+                                    <i class="fa-solid fa-chevron-left"></i>
+                                    <span style="color:#f59e0b; font-weight:600;">البوجيهات خلوصها كام</span>
+                                </button>
                             </div>
-                            <div class="refiner-row">
-                                <span class="refiner-label">OEM Normalization</span>
-                                <span class="refiner-val" id="ref-oem">-</span>
+                            
+                            <div class="refiner-result-panel" style="background:rgba(0,0,0,0.25); border:1px solid rgba(255,255,255,0.04); border-radius:10px; padding:12px; display:flex; flex-direction:column; gap:8px;">
+                                <h4 style="font-family:'Outfit'; font-size:13.5px; color: var(--primary); margin:0 0 4px 0;"><i class="fa-solid fa-filter-list"></i> Refiner Output</h4>
+                                <div class="refiner-row" style="display:flex; justify-content:space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom:4px; font-size:11px;">
+                                    <span class="refiner-label" style="color:var(--text-muted);">Literal Meaning:</span>
+                                    <span class="refiner-val" id="ref-literal" style="color:#fff; font-weight:600;">-</span>
+                                </div>
+                                <div class="refiner-row" style="display:flex; justify-content:space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom:4px; font-size:11px;">
+                                    <span class="refiner-label" style="color:var(--text-muted);">OEM Match:</span>
+                                    <span class="refiner-val" id="ref-oem" style="color:#fff; font-weight:600;">-</span>
+                                </div>
+                                <div class="refiner-row" style="display:flex; flex-direction:column; border: none; padding-top:4px; font-size:11px;">
+                                    <span class="refiner-label" style="color:var(--text-muted); margin-bottom:4px;">Refined for VDB Embedding:</span>
+                                    <span class="refiner-val refined" id="ref-final" style="color:var(--primary); font-family:'Fira Code'; font-weight:700; background:rgba(234,179,8,0.08); padding:4px 8px; border-radius:4px; border:1px dashed rgba(234,179,8,0.2); font-size:10px; text-align:center;">-</span>
+                                </div>
                             </div>
-                            <div class="refiner-row" style="border: none;">
-                                <span class="refiner-label">Refined English Output</span>
-                                <span class="refiner-val refined" id="ref-final">-</span>
+                        </div>
+
+                        <!-- Prompt Snippet Display -->
+                        <div style="background:#0f131a; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; font-family:'Fira Code', monospace; font-size:9px; color:#c9d1d9; line-height: 1.45; white-space: pre; overflow-x: auto; box-shadow: inset 0 2px 8px rgba(0,0,0,0.8);">
+<span style="color:#8b949e;"># ChatPromptTemplate in app/core/prompt_refiner.py</span>
+<span style="color:#ef4444; font-weight:700;">[SYSTEM ROLE]</span>
+&gt; <span style="color:#38bdf8; font-weight:600; text-shadow: 0 0 8px rgba(56,189,248,0.25);">You are an expert automotive engineering query optimizer...</span>
+
+<span style="color:#ef4444; font-weight:700;">[OEM DIRECTIVE]</span>
+&gt; Map colloquial slang to strict <span style="color:#10b981; font-weight:600;">OEM service manual vocabulary</span>.
+
+<span style="color:#ef4444; font-weight:700;">[DYNAMIC CONTEXT COMPILATION]</span>
+&gt; Query: <span style="color:#f59e0b; font-weight:700; text-shadow: 0 0 8px rgba(245,158,11,0.35);">{{ query }}</span>
+
+<span style="color:#ef4444; font-weight:700;">[GUARDRAIL CONSTRAINT]</span>
+&gt; Return <span style="color:#ff7b72; font-weight:700; text-decoration:underline;">ONLY</span> final, refined English keywords. <span style="color:#ff7b72; font-weight:700;">No explanations.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 9.2: Prompt Generator stage -->
+            <div class="slide" data-slide-name="Prompt Generator">
+                <div class="slide-header">
+                    <span class="slide-tag">16 / Response Generation</span>
+                    <h3 class="slide-title">Final Stage: Context-Grounded Response Generator Prompt</h3>
+                </div>
+                <div class="slide-content split-columns">
+                    <!-- Left: Prompt Architecture & Guidelines -->
+                    <div class="card card-accent" style="display:flex; flex-direction:column; gap:12px; justify-content:space-between;">
+                        <div>
+                            <p style="font-size:13.5px; color:var(--text-muted); line-height:1.5; margin:0 0 12px 0;">
+                                The final stage uses a highly sophisticated contextual prompt defined in <code>app/core/prompt_generator.py</code> to assemble the final answered output.
+                            </p>
+                            
+                            <div style="display:flex; flex-direction:column; gap:8px;">
+                                <!-- Directive 1 -->
+                                <div style="display:flex; align-items:flex-start; gap:10px; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.04); padding:8px 12px; border-radius:6px;">
+                                    <i class="fa-solid fa-code" style="color:var(--primary); font-size:12px; margin-top:2px;"></i>
+                                    <div>
+                                        <h4 style="font-family:'Outfit'; font-size:12px; color:#fff; margin:0 0 2px 0;">XML Structured Context Parsing</h4>
+                                        <p style="font-size:10.5px; color:var(--text-muted); margin:0; line-height:1.3;">Retrieved documents are compiled using custom XML blocks enclosing page numbers, section hierarchies, and table types.</p>
+                                    </div>
+                                </div>
+                                <!-- Directive 2 -->
+                                <div style="display:flex; align-items:flex-start; gap:10px; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.04); padding:8px 12px; border-radius:6px;">
+                                    <i class="fa-solid fa-filter-solid" style="color:var(--secondary); font-size:12px; margin-top:2px;"></i>
+                                    <div>
+                                        <h4 style="font-family:'Outfit'; font-size:12px; color:#fff; margin:0 0 2px 0;">Response Mode Isolation</h4>
+                                        <p style="font-size:10.5px; color:var(--text-muted); margin:0; line-height:1.3;">Jinja2 conditional logic automatically toggles strictly grounded output vs. supplemental Chery-specific automotive knowledge.</p>
+                                    </div>
+                                </div>
+                                <!-- Directive 3 -->
+                                <div style="display:flex; align-items:flex-start; gap:10px; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.04); padding:8px 12px; border-radius:6px;">
+                                    <i class="fa-solid fa-lock" style="color:#10b981; font-size:12px; margin-top:2px;"></i>
+                                    <div>
+                                        <h4 style="font-family:'Outfit'; font-size:12px; color:#10b981; margin:0 0 2px 0;">Strict Citation &amp; Language Lock</h4>
+                                        <p style="font-size:10.5px; color:var(--text-muted); margin:0; line-height:1.3;">Consolidates citations to the bottom section. Matches output language exactly with user query (supports dynamic Arabic replies).</p>
+                                    </div>
+                                </div>
                             </div>
+                        </div>
+
+                        <div style="background: rgba(59, 130, 246, 0.08); border-left: 3px solid var(--secondary); padding: 12px; border-radius: 8px; font-size: 10.5px; line-height: 1.5; color: var(--text-muted); box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+                            <span style="color:var(--secondary); font-weight:700;"><i class="fa-solid fa-graduation-cap"></i> Prompt Engineering Class:</span> <strong style="color: var(--secondary); background: rgba(59, 130, 246, 0.15); padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(59, 130, 246, 0.3); box-shadow: 0 0 12px rgba(59, 130, 246, 0.25); display: inline-block; margin-top: 4px; font-size: 11px;">Context-Grounded Instruction Prompting</strong><div style="margin-top: 8px;">Enforces explicit XML data isolation schemas, structural response protocols, and strict source citation constraints.</div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Code Snippet Display -->
+                    <div style="background: rgba(11, 12, 16, 0.6); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); justify-content: space-between; overflow:hidden;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px;">
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <i class="fa-solid fa-signature" style="color: var(--primary); font-size:13px;"></i>
+                                <span style="font-size: 11px; font-family: 'Fira Code', monospace; color: #fff; font-weight:700;">prompt_generator.py Structure</span>
+                            </div>
+                            <span style="font-size: 9px; font-family: 'Fira Code'; color: var(--secondary);"><i class="fa-solid fa-code"></i> Generator Template</span>
+                        </div>
+
+                        <!-- Code Snippet Display -->
+                        <div style="background:#0f131a; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; font-family:'Fira Code', monospace; font-size:8.5px; color:#c9d1d9; line-height: 1.4; white-space: pre; overflow-y: auto; height:310px; box-shadow: inset 0 2px 8px rgba(0,0,0,0.8);">
+<span style="color:#8b949e;"># ChatPromptTemplate in app/core/prompt_generator.py</span>
+<span style="color:#ef4444; font-weight:700;">[SYSTEM ROLE]</span>
+&gt; <span style="color:#38bdf8; font-weight:600; text-shadow: 0 0 8px rgba(56,189,248,0.25);">You are MECHRABOT 🤖, specialized EXCLUSIVELY in the Chery M11...</span>
+
+<span style="color:#ef4444; font-weight:700;">[XML CONTEXT SCHEMA]</span>
+&lt;documents&gt;
+<span style="color:#f59e0b; font-weight:600;">{% for doc in documents %}</span>
+  &lt;chunk id="<span style="color:#a5d6ff;">{{ loop.index }}</span>"&gt;
+    &lt;metadata&gt;
+      &lt;source&gt;<span style="color:#a5d6ff;">{{ doc.meta.source_file }}</span>&lt;/source&gt;
+      &lt;section&gt;<span style="color:#a5d6ff;">{{ doc.meta.section_path }}</span>&lt;/section&gt;
+    &lt;/metadata&gt;
+    &lt;content&gt;<span style="color:#a5d6ff;">{{ doc.content }}</span>&lt;/content&gt;
+  &lt;/chunk&gt;
+<span style="color:#f59e0b; font-weight:600;">{% endfor %}</span>
+&lt;/documents&gt;
+
+<span style="color:#ef4444; font-weight:700;">[DYNAMIC JINJA2 MODES]</span>
+📖 1. **From Service Manual**
+<span style="color:#10b981;">{% if mode == "augmented" %}</span>
+🧠 2. **Analysis &amp; M11-Specific Knowledge** <span style="color:#8b949e;"># Supplement allowed</span>
+<span style="color:#10b981;">{% else %}</span>
+🧠 2. **Technical Analysis** <span style="color:#8b949e;"># Strictly grounded ONLY</span>
+<span style="color:#10b981;">{% endif %}</span>
+
+<span style="color:#ef4444; font-weight:700;">[GUARDRAIL CONSTRAINT]</span>
+&gt; reply in the <span style="color:#ff7b72; font-weight:700; text-decoration:underline;">EXACT SAME LANGUAGE</span> as the user query.
+&gt; consolidated citations strictly at the very end under section 3.
                         </div>
                     </div>
                 </div>
@@ -1961,7 +2400,7 @@ enriched = chunker.contextualize(chunk=chunk)
             <!-- Slide 10: Quantitative Retrieval Evaluation -->
             <div class="slide" data-slide-name="Evaluation Metrics">
                 <div class="slide-header">
-                    <span class="slide-tag">16 / Quantitative Evaluation</span>
+                    <span class="slide-tag">17 / Quantitative Evaluation</span>
                     <h3 class="slide-title">System Metrics &amp; Retrieval Performance</h3>
                 </div>
                 <div class="slide-content split-columns">
@@ -2030,45 +2469,81 @@ enriched = chunker.contextualize(chunk=chunk)
                 </div>
             </div>
 
-            <!-- Slide 11: The Premium UI & Deployment -->
-            <div class="slide" data-slide-name="Frontend Experience">
+            <!-- Slide 11.2: Modal Deployment Architecture -->
+            <div class="slide" data-slide-name="Modal Deployment">
                 <div class="slide-header">
-                    <span class="slide-tag">17 / Interactive Experience</span>
-                    <h3 class="slide-title">Premium Field Experience &amp; UI Architecture</h3>
+                    <span class="slide-tag">18 / Cloud Infrastructure</span>
+                    <h3 class="slide-title">Serverless GPU Cloud Deployment Architecture</h3>
                 </div>
                 <div class="slide-content split-columns">
-                    <div class="card">
-                        <ul class="bullet-list">
-                            <li class="bullet-item">
-                                <i class="fa-solid fa-palette"></i>
-                                <div>
-                                    <h4>Curated Aesthetic Layout</h4>
-                                    <p>Built with customized vanilla CSS, utilizing glassmorphism and ambient glowing animations to wow users at first glance.</p>
+                    <!-- Left: Infrastructure Details -->
+                    <div class="card card-accent" style="display:flex; flex-direction:column; gap:12px; justify-content:space-between;">
+                        <div>
+                            <p style="font-size:13.5px; color:var(--text-muted); line-height:1.5; margin:0 0 12px 0;">
+                                Remote serverless pipeline orchestrator powered by Modal (defined in <code>app/modal_app.py</code>) to run heavy model pipelines on-demand.
+                            </p>
+                            
+                            <div style="display:flex; flex-direction:column; gap:8px;">
+                                <!-- Metric 1 -->
+                                <div style="display:flex; align-items:flex-start; gap:10px; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.04); padding:8px 12px; border-radius:6px;">
+                                    <i class="fa-solid fa-bolt" style="color:var(--primary); font-size:12px; margin-top:2px;"></i>
+                                    <div>
+                                        <h4 style="font-family:'Outfit'; font-size:12px; color:#fff; margin:0 0 2px 0;">Serverless T4 GPU Autoscale</h4>
+                                        <p style="font-size:10.5px; color:var(--text-muted); margin:0; line-height:1.3;">Leverages cost-efficient <strong>NVIDIA T4 GPUs</strong> with active scale-to-zero autoscaling (10-minute timeout), preventing idle resource charges.</p>
+                                    </div>
                                 </div>
-                            </li>
-                            <li class="bullet-item">
-                                <i class="fa-solid fa-film"></i>
-                                <div>
-                                    <h4>State-Aware Interactive Videos</h4>
-                                    <p>Integrates status feedback videos (spinning while RAG is processing, saluting when data answers are successfully ready).</p>
+                                <!-- Metric 2 -->
+                                <div style="display:flex; align-items:flex-start; gap:10px; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.04); padding:8px 12px; border-radius:6px;">
+                                    <i class="fa-solid fa-database" style="color:var(--secondary); font-size:12px; margin-top:2px;"></i>
+                                    <div>
+                                        <h4 style="font-family:'Outfit'; font-size:12px; color:#fff; margin:0 0 2px 0;">Mounted Weights &amp; Asset Volumes</h4>
+                                        <p style="font-size:10.5px; color:var(--text-muted); margin:0; line-height:1.3;">Dedicated remote caches mount HuggingFace weights and dynamic Chery M11 wiring diagrams instantly into local container directories.</p>
+                                    </div>
                                 </div>
-                            </li>
-                            <li class="bullet-item">
-                                <i class="fa-solid fa-magnifying-glass-plus"></i>
-                                <div>
-                                    <h4>Flexible Diagram Lightbox</h4>
-                                    <p>Allows mechanical technicians to easily view wiring and component schemas through smooth scroll-to-zoom and drag-to-pan overlays.</p>
+                                <!-- Metric 3 -->
+                                <div style="display:flex; align-items:flex-start; gap:10px; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.04); padding:8px 12px; border-radius:6px;">
+                                    <i class="fa-solid fa-gauge-high" style="color:#10b981; font-size:12px; margin-top:2px;"></i>
+                                    <div>
+                                        <h4 style="font-family:'Outfit'; font-size:12px; color:#10b981; margin:0 0 2px 0;">Sub-Second Cold Boot Latency</h4>
+                                        <p style="font-size:10.5px; color:var(--text-muted); margin:0; line-height:1.3;">Optimized Debian-Slim image construction sandboxes package imports, ensuring lightning-fast deployment cold starts.</p>
+                                    </div>
                                 </div>
-                            </li>
-                        </ul>
+                            </div>
+                        </div>
+
+                        <div style="background: rgba(59, 130, 246, 0.08); border-left: 3px solid var(--secondary); padding: 12px; border-radius: 8px; font-size: 10.5px; line-height: 1.5; color: var(--text-muted); box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+                            <span style="color:var(--secondary); font-weight:700;"><i class="fa-solid fa-graduation-cap"></i> Cloud Orchestration paradigm:</span> <strong style="color: var(--secondary); background: rgba(59, 130, 246, 0.15); padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(59, 130, 246, 0.3); box-shadow: 0 0 12px rgba(59, 130, 246, 0.25); display: inline-block; margin-top: 4px; font-size: 11px;">Serverless Remote Microservices</strong><div style="margin-top: 8px;">Converts complex RAG graph configurations into modular API endpoints running on dedicated hardware slices.</div>
+                        </div>
                     </div>
 
-                    <div style="background: var(--surface-accent); border: 1px solid var(--glass-border); border-radius:16px; padding: 24px; display:flex; flex-direction:column; gap:16px; text-align: center; justify-content: center;">
-                        <i class="fa-solid fa-microchip" style="font-size:48px; color: var(--secondary); margin-bottom: 8px; filter: drop-shadow(0 0 10px var(--secondary-glow));"></i>
-                        <h4 style="font-family:'Outfit'; font-size:18px; font-weight:700; margin-bottom: 4px;">Modal Serverless Deployment</h4>
-                        <p style="font-size:13px; color: var(--text-muted); line-height: 1.5;">
-                            Deployed remotely on scalable T4 GPU serverless infrastructure. Inexpensive, cold-start optimized, and supports rapid remote request execution.
-                        </p>
+                    <!-- Right Column: Interactive CLI & Live Metrics Dashboard -->
+                    <div style="background: rgba(11, 12, 16, 0.6); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); justify-content: space-between; overflow:hidden;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px;">
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <i class="fa-solid fa-server" style="color: var(--primary); font-size:13px;"></i>
+                                <span style="font-size: 11px; font-family: 'Fira Code', monospace; color: #fff; font-weight:700;">modal_app.py Dashboard</span>
+                            </div>
+                            <span style="font-size: 9px; font-family: 'Fira Code'; color: var(--secondary);"><i class="fa-solid fa-chart-line"></i> Monitoring Live UI</span>
+                        </div>
+
+                        <!-- Live Metrics Console Display -->
+                        <div style="background:#0f131a; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; font-family:'Fira Code', monospace; font-size:8.5px; color:#c9d1d9; line-height: 1.45; white-space: pre; overflow-y: auto; height:310px; box-shadow: inset 0 2px 8px rgba(0,0,0,0.8);">
+<span style="color:#8b949e;">$ modal deploy app/modal_app.py</span>
+<span style="color:#10b981;">✓</span> Created app <span style="color:#38bdf8; font-weight:600;">mechrabot</span>
+<span style="color:#10b981;">✓</span> Image build completed successfully (Debian-Slim)
+<span style="color:#10b981;">✓</span> Mount hf-hub-cache (Volume: hf-hub-cache) &rarr; /hf-cache
+<span style="color:#10b981;">✓</span> Mount mechrabot-images (Volume: mechrabot-images) &rarr; /images
+
+<span style="color:#ff7b72;">[INFO]</span> Initializing GPU class container MechRabotService...
+<span style="color:#ff7b72;">[GPU]</span>  Allocating <span style="color:#f59e0b; font-weight:600;">NVIDIA T4 GPU</span> (16GB VRAM) slice...
+<span style="color:#10b981;">[OK]</span>   Warm setup loaded. Model weights resolved from cache.
+<span style="color:#38bdf8;">[API]</span>  Serving endpoint <span style="color:#a5d6ff;">POST /query_endpoint</span> &rarr; <span style="color:#10b981; font-weight:700;">ACTIVE</span>
+<span style="color:#38bdf8;">[API]</span>  Serving endpoint <span style="color:#a5d6ff;">GET /get_image</span> &rarr; <span style="color:#10b981; font-weight:700;">ACTIVE</span>
+
+<span style="color:#8b949e;"># Calling Web Service Trace:</span>
+<span style="color:#eab308; font-weight:600;">Request:</span>  POST /query_endpoint {query: "سير كاتينة"}
+<span style="color:#10b981; font-weight:600;">Success:</span> Status 200 OK (Latency: <span style="color:#10b981; font-weight:700;">115ms</span> | GPU Mem: <span style="color:#38bdf8;">4.1GB/16GB</span>)
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2076,7 +2551,7 @@ enriched = chunker.contextualize(chunk=chunk)
             <!-- Slide 12: Economical Inherent Core Values -->
             <div class="slide" data-slide-name="Bottom Line Values">
                 <div class="slide-header">
-                    <span class="slide-tag">18 / Economical Summary</span>
+                    <span class="slide-tag">19 / Economical Summary</span>
                     <h3 class="slide-title">The Bottom Line — Economy, Precision &amp; Vision</h3>
                 </div>
                 <div class="slide-content split-columns">
@@ -2116,11 +2591,591 @@ enriched = chunker.contextualize(chunk=chunk)
                 </div>
             </div>
 
+
+            <!-- Slide 20: Serverless Diagram Serving & Mounts -->
+            <div class="slide" data-slide-name="Image serving volume">
+                <div class="slide-header">
+                    <span class="slide-tag">20 / Image Integration</span>
+                    <h3 class="slide-title">Serverless Diagram Serving &amp; Persistent Volumes</h3>
+                </div>
+                <div class="slide-content split-columns">
+                    <!-- Left: upload_images.py logic -->
+                    <div class="card card-accent" style="display:flex; flex-direction:column; gap:12px; justify-content:space-between; padding:20px;">
+                        <div>
+                            <h4 style="font-family:'Outfit'; font-size:15px; color:var(--primary); margin:0 0 8px 0;"><i class="fa-solid fa-cloud-arrow-up"></i> The Image Ingestion Pipeline</h4>
+                            <p style="font-size:12.5px; color:var(--text-muted); line-height:1.5; margin:0 0 16px 0;">
+                                To enable fast diagram serving without slow on-the-fly PDF image extractions, parsed schematics and component explosions are stored in a dedicated remote volume:
+                            </p>
+                            
+                            <ul class="bullet-list" style="gap:10px; font-size:12px;">
+                                <li class="bullet-item">
+                                    <i class="fa-solid fa-database" style="color:var(--primary); font-size:14px;"></i>
+                                    <div>
+                                        <h5 style="color:#fff; margin:0 0 2px 0;">Persistent Modal Volume Mount</h5>
+                                        <p style="font-size:11px; margin:0; line-height:1.35;">Declares <code>modal.Volume.from_name("mechrabot-images")</code>, providing a low-latency cache for thousands of repair manual visual assets.</p>
+                                    </div>
+                                </li>
+                                <li class="bullet-item">
+                                    <i class="fa-solid fa-truck-ramp-box" style="color:#f59e0b; font-size:14px;"></i>
+                                    <div>
+                                        <h5 style="color:#f59e0b; margin:0 0 2px 0;">High-Speed Batch Ingestion</h5>
+                                        <p style="font-size:11px; margin:0; line-height:1.35;">Runs <code>volume.batch_upload()</code> inside <code>upload_images.py</code>, bulk uploading M11 technical drawings directly from local output paths.</p>
+                                    </div>
+                                </li>
+                                <li class="bullet-item">
+                                    <i class="fa-solid fa-network-wired" style="color:#10b981; font-size:14px;"></i>
+                                    <div>
+                                        <h5 style="color:#10b981; margin:0 0 2px 0;">Dynamic Serving Endpoint</h5>
+                                        <p style="font-size:11px; margin:0; line-height:1.35;">Mounts the volume on the serverless backend, serving exact images (e.g. <code>GET /get_image?name=image_000361.png</code>) to the frontend gallery under 0.1s latency.</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div style="background: rgba(59, 130, 246, 0.08); border-left: 3px solid #3b82f6; padding: 10px; border-radius: 6px; font-size: 11px; line-height: 1.4; color: var(--text-muted);">
+                            <span style="color:#3b82f6; font-weight:700;"><i class="fa-solid fa-circle-nodes"></i> Seamless Linkage:</span> Parser outputs include <code>linked_images</code> tags in chunk metadata, enabling the system to render diagrams precisely next to matching text.
+                        </div>
+                    </div>
+
+                    <!-- Right: Code Snippet -->
+                    <div style="display:flex; flex-direction:column; gap:12px; background: rgba(11, 12, 16, 0.4); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); justify-content: space-between;">
+                        <div>
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                                <h4 style="font-family:'Outfit'; font-size:15px; color:var(--secondary); margin:0;"><i class="fa-solid fa-code"></i> app/upload_images.py</h4>
+                                <span class="badge" style="background:rgba(59,130,246,0.15); color:var(--primary); font-size:10px;">Modal Volume Mount</span>
+                            </div>
+                            
+                            <pre class="code-block" style="font-size:10.5px; height:280px; overflow-y:auto; line-height:1.45;"><code class="language-python">import modal
+from pathlib import Path
+
+app = modal.App("mechrabot-image-upload")
+
+# 1. Mount Persistent Storage Volume
+volume = modal.Volume.from_name("mechrabot-images", create_if_missing=True)
+
+LOCAL_DIR = Path(__file__).resolve().parent.parent / "extracted_artifacts"
+
+@app.local_entrypoint()
+def main():
+    files = sorted(LOCAL_DIR.glob("*.png"))
+    print(f"Found {len(files)} images in {LOCAL_DIR}")
+
+    # 2. Trigger Low-Latency Parallel Batch Upload
+    with volume.batch_upload() as batch:
+        for f in files:
+            batch.put_file(str(f), f"/{f.name}")
+
+    print(f"✅ Uploaded {len(files)} images to volume 'mechrabot-images'")</code></pre>
+                        </div>
+
+                        <div style="background:rgba(16,185,129,0.05); border:1px solid rgba(16,185,129,0.15); border-radius:8px; padding:10px; font-size:10.5px; line-height:1.45; color:var(--text-muted); display:flex; align-items:center; gap:8px;">
+                            <i class="fa-solid fa-server" style="color:#10b981;"></i>
+                            <span><strong>Zero Server Overhead:</strong> Volume mounting allows container clusters to instantly bind raw asset directories at scale.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 21: UI Response Modes & Prompt Generator Binding -->
+            <div class="slide" data-slide-name="Mode Binding">
+                <div class="slide-header">
+                    <span class="slide-tag">21 / Response Modes</span>
+                    <h3 class="slide-title">Full-Stack Mode Binding &amp; Prompt Generator</h3>
+                </div>
+                <div class="slide-content split-columns">
+                    <!-- Left: frontend/index.html UI bindings -->
+                    <div class="card card-accent" style="display:flex; flex-direction:column; gap:12px; justify-content:space-between; padding:20px;">
+                        <div>
+                            <h4 style="font-family:'Outfit'; font-size:15px; color:var(--primary); margin:0 0 8px 0;"><i class="fa-solid fa-sliders"></i> UI Toggle Mode Integration</h4>
+                            <p style="font-size:12.5px; color:var(--text-muted); line-height:1.5; margin:0 0 16px 0;">
+                                The frontend client binds three response configurations directly to the backend JINJA2 generator templates:
+                            </p>
+                            
+                            <ul class="bullet-list" style="gap:10px; font-size:12px;">
+                                <li class="bullet-item">
+                                    <i class="fa-solid fa-circle-check" style="color:#ff7b72; font-size:14px;"></i>
+                                    <div>
+                                        <h5 style="color:#fff; margin:0 0 2px 0;">🔐 Restricted (Pure Manual Only)</h5>
+                                        <p style="font-size:11px; margin:0; line-height:1.35;">Forces generator to ignore internal LLM weights, grounding output strictly in manual chunks.</p>
+                                    </div>
+                                </li>
+                                <li class="bullet-item">
+                                    <i class="fa-solid fa-circle-check" style="color:#f59e0b; font-size:14px;"></i>
+                                    <div>
+                                        <h5 style="color:#f59e0b; margin:0 0 2px 0;">🧠 Augmented (Diagnostic Analysis)</h5>
+                                        <p style="font-size:11px; margin:0; line-height:1.35;">Enriches standard manual specifications with localized Chery M11 RAG technical diagnostics.</p>
+                                    </div>
+                                </li>
+                                <li class="bullet-item">
+                                    <i class="fa-solid fa-circle-check" style="color:#10b981; font-size:14px;"></i>
+                                    <div>
+                                        <h5 style="color:#10b981; margin:0 0 2px 0;">🚀 Super-Augmented (Multi-Hop Enrichment)</h5>
+                                        <p style="font-size:11px; margin:0; line-height:1.35;">Unlocks deep reasoning layers, resolving sparse retrievals using safe, context-grounded mechanical warnings.</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div style="background: rgba(16, 185, 129, 0.08); border-left: 3px solid #10b981; padding: 10px; border-radius: 6px; font-size: 11px; line-height: 1.4; color: var(--text-muted);">
+                            <span style="color:#10b981; font-weight:700;"><i class="fa-solid fa-link"></i> REST API Binding:</span> Button data-attributes (<code>data-mode</code>) are collected via JavaScript and passed in query payloads: <code>body: JSON.stringify({ query, mode: currentMode })</code>.
+                        </div>
+                    </div>
+
+                    <!-- Right: Backend Prompt Logic -->
+                    <div style="display:flex; flex-direction:column; gap:12px; background: rgba(11, 12, 16, 0.4); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); justify-content: space-between;">
+                        <div>
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                                <h4 style="font-family:'Outfit'; font-size:15px; color:var(--secondary); margin:0;"><i class="fa-solid fa-code"></i> app/core/prompt_generator.py</h4>
+                                <span class="badge" style="background:rgba(245,158,11,0.15); color:#f59e0b; font-size:10px;">Jinja2 Template Logic</span>
+                            </div>
+                            
+                            <pre class="code-block" style="font-size:10.5px; height:280px; overflow-y:auto; line-height:1.45;"><code class="language-python"># Bindings in frontend/index.html submit currentMode:
+# body: JSON.stringify({ query: text, mode: currentMode })
+
+# Prompt Template processes standard vs. augmented context:
+generator_template = [ChatMessage.from_user(
+    """\
+    &lt;documents&gt;
+    {% for doc in documents %}
+    &lt;chunk id="{{ loop.index }}"&gt;
+      &lt;content&gt;{{ doc.content }}&lt;/content&gt;
+    &lt;/chunk&gt;
+    {% endfor %}
+    &lt;/documents&gt;
+
+    --- INSTRUCTIONS ---
+    Extract specs strictly from the retrieved manual &lt;documents&gt;.
+
+    {% if mode == "augmented" %}
+    2. 🧠 Analysis &amp; M11-Specific Knowledge:
+       - Supplement retrieved specs with localized diagnostic logic.
+       - Note: End section with: "⚠️ Note: Supplemental additions are not sourced from the manual."
+    {% else %}
+    2. 🧠 Technical Analysis:
+       - Restrict analysis strictly to the manual data facts only.
+    {% endif %}
+    """
+)]</code></pre>
+                        </div>
+
+                        <div style="background:rgba(59,130,246,0.05); border:1px solid rgba(59,130,246,0.15); border-radius:8px; padding:10px; font-size:10.5px; line-height:1.45; color:var(--text-muted); display:flex; align-items:center; gap:8px;">
+                            <i class="fa-solid fa-code-branch" style="color:var(--primary);"></i>
+                            <span><strong>Adaptive RAG:</strong> The engine modifies prompt schemas dynamically depending on active UI toggles.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            <!-- Slide 22: Complete System Architecture Workflow Diagram -->
+            <div class="slide" data-slide-name="Workflow Diagram">
+                <div class="slide-header">
+                    <span class="slide-tag">22 / Full System Workflow</span>
+                    <h3 class="slide-title">Finally: The Full System Architecture Workflow</h3>
+                </div>
+                <div class="slide-content split-columns" style="align-items: center;">
+                    <!-- Left Column: Context & Up-Next Callout -->
+                    <div class="card card-accent" style="display:flex; flex-direction:column; gap:12px; justify-content:space-between; padding:20px; height: 100%;">
+                        <div>
+                            <h4 style="font-family:'Outfit'; font-size:15px; color:var(--primary); margin:0 0 8px 0;"><i class="fa-solid fa-diagram-project"></i> Complete End-to-End Orchestration</h4>
+                            <p style="font-size:12.5px; color:var(--text-muted); line-height:1.5; margin:0 0 16px 0;">
+                                The full MECHRABOT RAG infrastructure integrates advanced document chunking, hybrid vectors database indexing, query refinement layers, and serverless deployment:
+                            </p>
+                            
+                            <ul class="bullet-list" style="gap:10px; font-size:12px;">
+                                <li class="bullet-item">
+                                    <i class="fa-solid fa-file-pdf" style="color:#ff7b72; font-size:13px;"></i>
+                                    <div>
+                                        <h5 style="color:#fff; margin:0 0 2px 0;">Ingestion &amp; Parsing</h5>
+                                        <p style="font-size:10.5px; margin:0; line-height:1.35;">Spatial layouts and component drawing images are parsed using dynamic layout boundary limits.</p>
+                                    </div>
+                                </li>
+                                <li class="bullet-item">
+                                    <i class="fa-solid fa-cube" style="color:#f59e0b; font-size:13px;"></i>
+                                    <div>
+                                        <h5 style="color:#f59e0b; margin:0 0 2px 0;">Sparse &amp; Dense Search</h5>
+                                        <p style="font-size:10.5px; margin:0; line-height:1.35;">Retrieval-Augmented queries map dense semantic embeddings and sparse lexical tokens across Qdrant indexes.</p>
+                                    </div>
+                                </li>
+                                <li class="bullet-item">
+                                    <i class="fa-solid fa-shield-check" style="color:#10b981; font-size:13px;"></i>
+                                    <div>
+                                        <h5 style="color:#10b981; margin:0 0 2px 0;">Adaptive Grounding</h5>
+                                        <p style="font-size:10.5px; margin:0; line-height:1.35;">Filters prompt instructions inside specialized Jinja2 templates, outputting rigidly structured OEM specs.</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Next Slide Callout: Mechra VS NotebookLM benchmark -->
+                        <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.2); padding: 12px; border-radius: 8px; font-size: 11px; line-height: 1.4; color: var(--text-muted); display:flex; align-items:center; gap:8px;">
+                            <i class="fa-solid fa-circle-arrow-right" style="color:var(--primary); font-size:16px;"></i>
+                            <span><strong>Next Up:</strong> Let's compare MECHRABOT against standard frameworks (NotebookLM) and examine its structured output precision!</span>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Breathtaking Architectural Diagram Image -->
+                    <div style="display:flex; flex-direction:column; gap:10px; justify-content:center; align-items:center; background: rgba(11, 12, 16, 0.3); border: 1px solid var(--glass-border); border-radius: 16px; padding: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); height: 100%;">
+                        <div style="width:100%; text-align:center;">
+                            <img src="pngs/Gemini_Generated_Image_architecture.png" alt="Complete MechRabot Architecture Diagram" style="width:100%; border-radius:12px; border:1px solid rgba(255,255,255,0.06); object-fit:contain; height:300px; box-shadow:0 8px 24px rgba(0,0,0,0.5);">
+                            <div style="font-family:'Fira Code'; font-size:10px; color:var(--secondary); font-weight:700; margin-top:8px;">
+                                Fig 3: End-to-end full technical orchestration workflow architecture
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 23: Mechra VS NotebookLM Benchmark -->
+            <div class="slide" data-slide-name="Mechra VS NotebookLM">
+                <div class="slide-header">
+                    <span class="slide-tag">23 / Mechra VS NotebookLM</span>
+                    <h3 class="slide-title">MECHRABOT vs. NotebookLM</h3>
+                </div>
+                <div class="slide-content split-columns">
+                    <!-- Left: Comparative Narrative -->
+                    <div class="card card-accent" style="display:flex; flex-direction:column; gap:10px; justify-content:space-between; padding:16px;">
+                        <div>
+                            <h4 style="font-family:'Outfit'; font-size:14px; color:var(--primary); margin:0 0 6px 0;"><i class="fa-solid fa-shield-halved"></i> Strategic Advantages &amp; Security</h4>
+                            <p style="font-size:11.5px; color:var(--text-muted); line-height:1.4; margin:0 0 10px 0;">
+                                MECHRABOT goes far beyond generic document query search boxes. It operates as an extensible, enterprise-grade industrial pipeline:
+                            </p>
+                            
+                            <div style="display:flex; flex-direction:column; gap:6px; font-size:10px;">
+                                <!-- Advantage 1: Enrichment -->
+                                <div style="background:rgba(59,130,246,0.03); border:1px solid rgba(59,130,246,0.1); padding:8px 10px; border-radius:6px;">
+                                    <strong style="color:var(--primary);"><i class="fa-solid fa-wand-magic-sparkles"></i> Adaptive Response Enrichment:</strong>
+                                    <span style="color:var(--text-muted);">If retrieved manual content is poor or sparse, MECHRABOT safely enriches the replies with high-precision engineering guidelines and cautions, ensuring mechanics get complete, safe actions.</span>
+                                </div>
+                                <!-- Advantage 2: Hardware & Privacy -->
+                                <div style="background:rgba(16,185,129,0.03); border:1px solid rgba(16,185,129,0.1); padding:8px 10px; border-radius:6px;">
+                                    <strong style="color:#10b981;"><i class="fa-solid fa-lock"></i> Absolute Data Protection:</strong>
+                                    <span style="color:var(--text-muted);">Runs completely sandboxed on <strong>low-spec local hardware</strong> (no high-end GPUs needed) or virtual serverless mounts, guaranteeing complete privacy for proprietary manuals.</span>
+                                </div>
+                                <!-- Advantage 3: Multi-Function Strategy -->
+                                <div style="background:rgba(245,158,11,0.03); border:1px solid rgba(245,158,11,0.1); padding:8px 10px; border-radius:6px;">
+                                    <strong style="color:#f59e0b;"><i class="fa-solid fa-cubes"></i> Multi-Function Platform:</strong>
+                                    <span style="color:var(--text-muted);">Architected as a modular REST API, serving as a unified launchpad for scheduling, OBD diagnostics, inventory, and visual manual analysis.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="background: rgba(59, 130, 246, 0.08); border: 1px dashed rgba(59, 130, 246, 0.2); padding: 8px 12px; border-radius: 6px; font-size: 10px; line-height: 1.3; color: var(--text-muted); display:flex; align-items:center; gap:8px;">
+                            <i class="fa-solid fa-piggy-bank" style="color:var(--secondary); font-size:16px;"></i>
+                            <span><strong>Pay-As-You-Go Economy:</strong> Modal's serverless structure operates at a fraction of the cost of premium closed-ecosystem SaaS licenses.</span>
+                        </div>
+                    </div>
+
+                    <!-- Right: Benchmark Matrix Table -->
+                    <div style="display:flex; flex-direction:column; gap:10px; background: rgba(11, 12, 16, 0.4); border: 1px solid var(--glass-border); border-radius: 16px; padding: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); justify-content: space-between;">
+                        <div>
+                            <h4 style="font-family:'Outfit'; font-size:14px; color:var(--secondary); margin:0 0 10px 0;"><i class="fa-solid fa-chart-simple"></i> System Benchmarking Matrix</h4>
+                            
+                            <table style="width:100%; border-collapse:collapse; text-align:left; font-size:10.5px;">
+                                <thead>
+                                    <tr style="border-bottom:1px solid rgba(255,255,255,0.08);">
+                                        <th style="padding:4px 6px; color:var(--text-muted); font-weight:700;">Parameters</th>
+                                        <th style="padding:4px 6px; color:var(--primary); font-weight:700;">MECHRABOT</th>
+                                        <th style="padding:4px 6px; color:var(--secondary); font-weight:700;">NotebookLM</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+                                        <td style="padding:6px; font-weight:600; color:#fff;">Response Speed</td>
+                                        <td style="padding:6px; color:#10b981; font-weight:700;"><i class="fa-solid fa-bolt"></i> Equal (Sub-Second)</td>
+                                        <td style="padding:6px; color:#10b981;"><i class="fa-solid fa-bolt"></i> Equal (Sub-Second)</td>
+                                    </tr>
+                                    <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+                                        <td style="padding:6px; font-weight:600; color:#fff;">Data Privacy</td>
+                                        <td style="padding:6px; color:#10b981; font-weight:700;"><i class="fa-solid fa-circle-check"></i> 100% Local / Sandboxed</td>
+                                        <td style="padding:6px; color:#ff7b72;"><i class="fa-solid fa-triangle-exclamation"></i> Closed Cloud Vendor</td>
+                                    </tr>
+                                    <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+                                        <td style="padding:6px; font-weight:600; color:#fff;">Operating Cost</td>
+                                        <td style="padding:6px; color:#10b981; font-weight:700;"><i class="fa-solid fa-coins"></i> Cheap (Pay-As-You-Go)</td>
+                                        <td style="padding:6px; color:var(--text-muted);">High Subscription</td>
+                                    </tr>
+                                    <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+                                        <td style="padding:6px; font-weight:600; color:#fff;">Hardware Demand</td>
+                                        <td style="padding:6px; color:#10b981; font-weight:700;">Extremely Low (Low-Spec)</td>
+                                        <td style="padding:6px; color:var(--text-muted); text-align:center;">—</td>
+                                    </tr>
+                                    <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+                                        <td style="padding:6px; font-weight:600; color:#fff;">Technical Reasoning</td>
+                                        <td style="padding:6px; color:#10b981; font-weight:700;"><i class="fa-solid fa-star"></i> Exceptional (Contextual)</td>
+                                        <td style="padding:6px; color:var(--text-muted);">Basic (Literal Search)</td>
+                                    </tr>
+                                    <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+                                        <td style="padding:6px; font-weight:600; color:#fff;">Expandability</td>
+                                        <td style="padding:6px; color:#10b981; font-weight:700;">High (Multi-Function API)</td>
+                                        <td style="padding:6px; color:var(--text-muted);">None (Closed Chat UI)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div style="background:rgba(59,130,246,0.04); border:1px solid rgba(59,130,246,0.12); border-radius:8px; padding:8px 10px; font-size:10px; line-height:1.4; color:var(--text-muted); display:flex; align-items:center; gap:8px;">
+                            <i class="fa-solid fa-award" style="color:var(--secondary); font-size:14px;"></i>
+                            <span>MECHRABOT ensures complete engineering logic, extreme cost efficiency, and absolute data safety.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 24: Structured Outputs & Product Interface Mockups -->
+            <div class="slide" data-slide-name="Premium Structure">
+                <div class="slide-header">
+                    <span class="slide-tag">24 / Structured Answers</span>
+                    <h3 class="slide-title">Premium Structured Output &amp; Contextual Precision</h3>
+                </div>
+                <div class="slide-content split-columns">
+                    <!-- Left: Narrative Details of Structure -->
+                    <div class="card card-accent" style="display:flex; flex-direction:column; gap:12px; justify-content:space-between; padding:20px;">
+                        <div>
+                            <h4 style="font-family:'Outfit'; font-size:15px; color:var(--primary); margin:0 0 8px 0;"><i class="fa-solid fa-align-left"></i> The Anatomy of a Perfect Answer</h4>
+                            <p style="font-size:12.5px; color:var(--text-muted); line-height:1.5; margin:0 0 16px 0;">
+                                MECHRABOT completely avoids the standard LLM trap of unformatted, ungrounded text walls. Every response is structured to fit a professional mechanic's workflow:
+                            </p>
+                            
+                            <ul class="bullet-list" style="gap:10px; font-size:12px;">
+                                <li class="bullet-item">
+                                    <i class="fa-solid fa-clipboard-list" style="color:var(--primary); font-size:14px;"></i>
+                                    <div>
+                                        <h5 style="color:#fff; margin:0 0 2px 0;">Rigidly Segmented Sections</h5>
+                                        <p style="font-size:11px; margin:0; line-height:1.35;">Separates formal manual values, contextual diagnostics, and complete document citation blocks.</p>
+                                    </div>
+                                </li>
+                                <li class="bullet-item">
+                                    <i class="fa-solid fa-triangle-exclamation" style="color:#f59e0b; font-size:14px;"></i>
+                                    <div>
+                                        <h5 style="color:#f59e0b; margin:0 0 2px 0;">Prominent Engineering Warnings</h5>
+                                        <p style="font-size:11px; margin:0; line-height:1.35;">Highlights thermal shocks, high-voltage risks, and wear consequences with high-visibility caution protocols.</p>
+                                    </div>
+                                </li>
+                                <li class="bullet-item">
+                                    <i class="fa-solid fa-code-compare" style="color:#10b981; font-size:14px;"></i>
+                                    <div>
+                                        <h5 style="color:#10b981; margin:0 0 2px 0;">Bilingual Context Validation</h5>
+                                        <p style="font-size:11px; margin:0; line-height:1.35;">Understands colloquial slang queries, shows the refined OEM English terms, and returns responses locked to the user's language.</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Next Slide Callout: Transition to community reviews -->
+                        <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.2); padding: 12px; border-radius: 8px; font-size: 11px; line-height: 1.4; color: var(--text-muted); display:flex; align-items:center; gap:8px;">
+                            <i class="fa-solid fa-circle-arrow-right" style="color:var(--primary); font-size:16px;"></i>
+                            <span><strong>Next Up:</strong> Let's see how real car owners and mechanical specialists validate this performance in the field!</span>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Visual Product Interfaces Grid -->
+                    <div style="display:flex; flex-direction:column; gap:16px; justify-content:center; align-items:center;">
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; width:100%;">
+                            <!-- Image Card 1 -->
+                            <div style="background:rgba(0,0,0,0.3); border:1px solid var(--glass-border); border-radius:12px; padding:8px; display:flex; flex-direction:column; gap:6px; box-shadow:0 8px 24px rgba(0,0,0,0.4); text-align:center;">
+                                <img src="pngs/image.png" alt="Slang Refinement Interface" style="width:100%; border-radius:8px; border:1px solid rgba(255,255,255,0.06); object-fit:cover; height:200px;">
+                                <span style="font-size:10px; font-family:'Fira Code'; color:var(--primary); font-weight:700; margin-top:4px;">Refinement &amp; Slang Trace</span>
+                            </div>
+                            
+                            <!-- Image Card 2 -->
+                            <div style="background:rgba(0,0,0,0.3); border:1px solid var(--glass-border); border-radius:12px; padding:8px; display:flex; flex-direction:column; gap:6px; box-shadow:0 8px 24px rgba(0,0,0,0.4); text-align:center;">
+                                <img src="pngs/Screenshot_2026-05-22_06-58-31.png" alt="Structured Grounded Answer" style="width:100%; border-radius:8px; border:1px solid rgba(255,255,255,0.06); object-fit:cover; height:200px;">
+                                <span style="font-size:10px; font-family:'Fira Code'; color:var(--secondary); font-weight:700; margin-top:4px;">Grounded Segmented Output</span>
+                            </div>
+                        </div>
+                        
+                        <div style="font-family:'Fira Code'; font-size:10.5px; color:#fff; text-shadow:0 0 8px rgba(255,255,255,0.25); background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); padding:6px 16px; border-radius:30px; text-align:center;">
+                            🛠️ <strong>100% Grounded Answers</strong> — Built by Engineers for Field Mechanics.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 25: Field Testing & Active User Feedback -->
+            <div class="slide" data-slide-name="User Reviews">
+                <div class="slide-header">
+                    <span class="slide-tag">25 / Community Response</span>
+                    <h3 class="slide-title">Field Testing &amp; Active User Feedback</h3>
+                </div>
+                <div class="slide-content split-columns">
+                    <!-- Left: Community Feedback & Mechanics Chat -->
+                    <div class="card card-accent" style="display:flex; flex-direction:column; gap:12px; justify-content:space-between; padding:20px;">
+                        <div>
+                            <h4 style="font-family:'Outfit'; font-size:15px; color:var(--primary); margin:0 0 8px 0;"><i class="fa-solid fa-comments"></i> Voices from the Field</h4>
+                            <p style="font-size:12.5px; color:var(--text-muted); line-height:1.5; margin:0 0 16px 0;">
+                                Initial pilot runs across specialized mechanical communities and active Chery M11 groups yielded overwhelmingly positive validation logs:
+                            </p>
+                            
+                            <ul class="bullet-list" style="gap:10.5px; font-size:12px;">
+                                <li class="bullet-item">
+                                    <i class="fa-solid fa-heart" style="color:#ff7b72; font-size:14px;"></i>
+                                    <div>
+                                        <h5 style="color:#fff; margin:0 0 2px 0;">Highly Praised for Arabic Slang</h5>
+                                        <p style="font-size:11px; margin:0; line-height:1.35;">Users praised the system's ability to interpret colloquial terms (like <em>سير كاتينة</em> or <em>بلية شداد</em>) and return correct OEM catalog schematics.</p>
+                                    </div>
+                                </li>
+                                <li class="bullet-item">
+                                    <i class="fa-solid fa-star" style="color:#f59e0b; font-size:14px;"></i>
+                                    <div>
+                                        <h5 style="color:#f59e0b; margin:0 0 2px 0;">Unrivaled Precision &amp; Grounding</h5>
+                                        <p style="font-size:11px; margin:0; line-height:1.35;">Zero reports of hallucinated values. Mechanics trust the specifications completely because every parameter points to absolute manual pages.</p>
+                                    </div>
+                                </li>
+                                <li class="bullet-item">
+                                    <i class="fa-solid fa-clock-rotate-left" style="color:#10b981; font-size:14px;"></i>
+                                    <div>
+                                        <h5 style="color:#10b981; margin:0 0 2px 0;">Massive Time Savings</h5>
+                                        <p style="font-size:11px; margin:0; line-height:1.35;">Reduces time spent searching through 1,300+ technical pages of Chery ACTECO manuals from hours to a single query click.</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div style="background: rgba(16, 185, 129, 0.08); border-left: 3px solid #10b981; padding: 10px; border-radius: 6px; font-size: 11px; line-height: 1.4; color: var(--text-muted);">
+                            <span style="color:#10b981; font-weight:700;"><i class="fa-solid fa-users"></i> The Power of RAG:</span> Enabling every local mechanic to access structured, specialist-level technical parameters instantly.
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Community Visual Interactions -->
+                    <div style="display:flex; flex-direction:column; gap:16px; justify-content:center; align-items:center;">
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; width:100%;">
+                            <!-- Image Card 1 -->
+                            <div style="background:rgba(0,0,0,0.3); border:1px solid var(--glass-border); border-radius:12px; padding:8px; display:flex; flex-direction:column; gap:6px; box-shadow:0 8px 24px rgba(0,0,0,0.4); text-align:center;">
+                                <img src="pngs/image copy 2.png" alt="Mechanics feedback log" style="width:100%; border-radius:8px; border:1px solid rgba(255,255,255,0.06); object-fit:cover; height:220px;">
+                                <span style="font-size:10px; font-family:'Fira Code'; color:var(--primary); font-weight:700; margin-top:4px;">Diagnostic Validation Chat</span>
+                            </div>
+                            
+                            <!-- Image Card 2 -->
+                            <div style="background:rgba(0,0,0,0.3); border:1px solid var(--glass-border); border-radius:12px; padding:8px; display:flex; flex-direction:column; gap:6px; box-shadow:0 8px 24px rgba(0,0,0,0.4); text-align:center;">
+                                <img src="pngs/image copy 3.png" alt="Active community user verification" style="width:100%; border-radius:8px; border:1px solid rgba(255,255,255,0.06); object-fit:cover; height:220px;">
+                                <span style="font-size:10px; font-family:'Fira Code'; color:var(--secondary); font-weight:700; margin-top:4px;">User Verification &amp; Review</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 26: Professional YouTuber Case Study & Audio Review -->
+            <div class="slide" data-slide-name="Expert Review">
+                <div class="slide-header">
+                    <span class="slide-tag">26 / Expert Review</span>
+                    <h3 class="slide-title">Automotive Specialist Review &amp; Voice Diagnostics</h3>
+                </div>
+                <div class="slide-content split-columns">
+                    <!-- Left: Narrative & Premium Custom Audio Player -->
+                    <div class="card card-accent" style="display:flex; flex-direction:column; gap:12px; justify-content:space-between; padding:20px;">
+                        <div>
+                            <h4 style="font-family:'Outfit'; font-size:15px; color:var(--primary); margin:0 0 8px 0;"><i class="fa-solid fa-microphone-lines"></i> Automotive Specialist Review</h4>
+                            <p style="font-size:12.5px; color:var(--text-muted); line-height:1.5; margin:0 0 16px 0;">
+                                A prominent automotive content creator and technical YouTuber specialized in mechanical car diagnostics reviewed MECHRABOT. Listen to their professional evaluation:
+                            </p>
+                            
+                            <!-- Premium Custom Audio Player Block -->
+                            <div style="background: rgba(11, 12, 16, 0.6); border: 1px solid var(--glass-border); border-radius: 12px; padding: 16px; margin: 16px 0; box-shadow: 0 4px 16px rgba(0,0,0,0.3); display: flex; flex-direction: column; gap: 12px;">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <button onclick="toggleUserAudio()" id="audio-play-btn" style="background: var(--primary); border: none; border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #0b0c10; font-size: 16px; box-shadow: 0 0 15px rgba(245, 158, 11, 0.4); transition: all 0.2s ease;">
+                                        <i class="fa-solid fa-play" id="audio-play-icon"></i>
+                                    </button>
+                                    <div style="display: flex; flex-direction: column; gap: 2px; flex-grow: 1;">
+                                        <span style="font-size: 11px; font-weight: 700; color: #fff;">Expert Diagnostic Review Note</span>
+                                        <span style="font-size: 9.5px; color: var(--text-muted);">Specialist Voice Note • Arabic Dialect</span>
+                                    </div>
+                                    <i class="fa-solid fa-volume-high" style="color:var(--secondary); font-size:14px;"></i>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px; font-size: 9.5px; color: var(--text-muted);">
+                                    <span id="audio-current-time">0:00</span>
+                                    <div style="background: rgba(255,255,255,0.08); border-radius: 4px; height: 5px; flex-grow: 1; position: relative; overflow: hidden; cursor: pointer;" onclick="seekUserAudio(event)" id="audio-progress-container">
+                                        <div id="audio-progress-bar" style="background: var(--primary); height: 100%; width: 0%; border-radius: 4px;"></div>
+                                    </div>
+                                    <span id="audio-total-time">--:--</span>
+                                </div>
+                                <audio id="chery-expert-audio" src="pngs/WhatsApp Ptt 2026-05-16 at 1.28.17 PM.ogg" preload="metadata" ontimeupdate="onAudioTimeUpdate()" onloadedmetadata="onAudioLoaded()"></audio>
+                            </div>
+                        </div>
+
+                        <div style="background: rgba(245, 158, 11, 0.08); border-left: 3px solid #f59e0b; padding: 10px; border-radius: 6px; font-size: 11px; line-height: 1.4; color: var(--text-muted);">
+                            <span style="color:#f59e0b; font-weight:700;"><i class="fa-solid fa-award"></i> The Specialist verdict:</span> MECHRABOT successfully eliminates technical search fatigue, bridging dialectical gaps and offering direct visual links to engine schematics.
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Visual Reference screenshot -->
+                    <div style="display:flex; flex-direction:column; gap:16px; justify-content:center; align-items:center; background: rgba(11, 12, 16, 0.3); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.4);">
+                        <div style="width:100%; text-align:center;">
+                            <img src="pngs/image copy 4.png" alt="YouTuber expert video testing" style="width:100%; border-radius:12px; border:1px solid rgba(255,255,255,0.06); object-fit:cover; height:240px; box-shadow:0 8px 24px rgba(0,0,0,0.5);">
+                            <div style="font-family:'Fira Code'; font-size:10px; color:var(--secondary); font-weight:700; margin-top:8px;">
+                                Fig 2: Professional YouTuber testing the MECHRABOT localized query interface
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Slide 27: Direct Workshop Validation (Chery M11 Owner) -->
+            <div class="slide" data-slide-name="Workshop Validation">
+                <div class="slide-header">
+                    <span class="slide-tag">27 / Field In-Garage Testing</span>
+                    <h3 class="slide-title">Direct Workshop Validation: Real M11 Owner Diagnostic</h3>
+                </div>
+                <div class="slide-content split-columns">
+                    <!-- Left: Owner Story and Workshop Benefits -->
+                    <div class="card card-accent" style="display:flex; flex-direction:column; gap:12px; justify-content:space-between; padding:20px;">
+                        <div>
+                            <h4 style="font-family:'Outfit'; font-size:15px; color:var(--primary); margin:0 0 8px 0;"><i class="fa-solid fa-screwdriver-wrench"></i> In-Garage Mechanics Validation</h4>
+                            <p style="font-size:12.5px; color:var(--text-muted); line-height:1.5; margin:0 0 16px 0;">
+                                For a hands-on owner working inside their personal garage or professional repair bay, MECHRABOT acts as an active digital co-pilot:
+                            </p>
+                            
+                            <ul class="bullet-list" style="gap:10.5px; font-size:12px;">
+                                <li class="bullet-item">
+                                    <i class="fa-solid fa-hands-holding-circle" style="color:var(--primary); font-size:14px;"></i>
+                                    <div>
+                                        <h5 style="color:#fff; margin:0 0 2px 0;">Hands-On Autonomy</h5>
+                                        <p style="font-size:11px; margin:0; line-height:1.35;">Provides immediate clearance, sequential torque, and tolerance specifications without requiring the user to flip pages while wearing greasy work gloves.</p>
+                                    </div>
+                                </li>
+                                <li class="bullet-item">
+                                    <i class="fa-solid fa-circle-check" style="color:#10b981; font-size:14px;"></i>
+                                    <div>
+                                        <h5 style="color:#10b981; margin:0 0 2px 0;">Instant Trouble Code Lookup</h5>
+                                        <p style="font-size:11px; margin:0; line-height:1.35;">Resolves specific Chery M11 ACTECO sensor faults on the spot, directly referencing precise wiring schematics stored in backend volumes.</p>
+                                    </div>
+                                </li>
+                                <li class="bullet-item">
+                                    <i class="fa-solid fa-gauge-high" style="color:#f59e0b; font-size:14px;"></i>
+                                    <div>
+                                        <h5 style="color:#f59e0b; margin:0 0 2px 0;">Zero Diagnostic Guesswork</h5>
+                                        <p style="font-size:11px; margin:0; line-height:1.35;">Grounded retrieval safeguards prevent expensive mechanical troubleshooting errors and parts-cannon guesswork.</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div style="background: rgba(59, 130, 246, 0.08); border-left: 3px solid #3b82f6; padding: 10px; border-radius: 6px; font-size: 11px; line-height: 1.4; color: var(--text-muted);">
+                            <span style="color:#3b82f6; font-weight:700;"><i class="fa-solid fa-car"></i> Empowering Car Owners:</span> Bridging the gap between specialized OEM technical documentation and the individual enthusiast's workbench.
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Visual Owner Reference -->
+                    <div style="display:flex; flex-direction:column; gap:16px; justify-content:center; align-items:center; background: rgba(11, 12, 16, 0.3); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.4);">
+                        <div style="width:100%; text-align:center;">
+                            <img src="pngs/image copy.png" alt="Real Chery M11 Owner Workshop" style="width:100%; border-radius:12px; border:1px solid rgba(255,255,255,0.06); object-fit:cover; height:280px; box-shadow:0 8px 24px rgba(0,0,0,0.5);">
+                            <div style="font-family:'Fira Code'; font-size:10px; color:var(--primary); font-weight:700; margin-top:8px;">
+                                Fig 1: Real-world testing by Chery M11 owner validating mechanical tolerance logs
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <!-- Lower Control Bar -->
         <div class="controls-bar">
-            <div class="slide-counter" id="slide-counter">01 / 19</div>
+            <div class="slide-counter" id="slide-counter">01 / 28</div>
             <div class="progress-container">
                 <div class="progress-bar" id="progress-bar"></div>
             </div>
@@ -2532,7 +3587,7 @@ enriched = chunker.contextualize(chunk=chunk)
                 nodes[0].style.borderColor = 'var(--secondary)';
                 nodes[0].querySelector('.dag-status').textContent = 'ACTIVE';
                 nodes[0].querySelector('.dag-status').style.color = 'var(--secondary)';
-                traceLog.innerHTML = `<span style="color:#3b82f6;">[100ms]</span> Query Ingestion Active: query = "عزم برغي بكرة الكاتينة"`;
+                traceLog.innerHTML = `<span style="color:#3b82f6;">[100ms]</span> Query Ingestion Active: query = "<span style='color:#f59e0b; font-weight:600;'>عزم برغي بكرة الكاتينة</span>"`;
             }, 200);
 
             // FLOW LINE 1
@@ -3019,6 +4074,139 @@ enriched = chunker.contextualize(chunk=chunk)
                 });
             }, 250);
         }
+
+        // ── Custom Audio Player Helper Functions ────────────────────────
+        function toggleUserAudio() {
+            const audio = document.getElementById('chery-expert-audio');
+            const playIcon = document.getElementById('audio-play-icon');
+            const playBtn = document.getElementById('audio-play-btn');
+            
+            if (audio.paused) {
+                audio.play();
+                playIcon.className = "fa-solid fa-pause";
+                playBtn.style.boxShadow = "0 0 20px rgba(16, 185, 129, 0.4)";
+                playBtn.style.background = "#10b981";
+            } else {
+                audio.pause();
+                playIcon.className = "fa-solid fa-play";
+                playBtn.style.boxShadow = "0 0 15px rgba(245, 158, 11, 0.4)";
+                playBtn.style.background = "var(--primary)";
+            }
+        }
+
+        function onAudioLoaded() {
+            const audio = document.getElementById('chery-expert-audio');
+            const totalTime = document.getElementById('audio-total-time');
+            totalTime.textContent = formatAudioTime(audio.duration);
+        }
+
+        function onAudioTimeUpdate() {
+            const audio = document.getElementById('chery-expert-audio');
+            const currentTime = document.getElementById('audio-current-time');
+            const progressBar = document.getElementById('audio-progress-bar');
+            
+            currentTime.textContent = formatAudioTime(audio.currentTime);
+            const pct = (audio.currentTime / audio.duration) * 100;
+            progressBar.style.width = `${pct}%`;
+        }
+
+        function seekUserAudio(event) {
+            const audio = document.getElementById('chery-expert-audio');
+            const container = document.getElementById('audio-progress-container');
+            const rect = container.getBoundingClientRect();
+            const clickX = event.clientX - rect.left;
+            const width = rect.width;
+            audio.currentTime = (clickX / width) * audio.duration;
+        }
+
+        function formatAudioTime(secs) {
+            if (isNaN(secs)) return "0:00";
+            const minutes = Math.floor(secs / 60);
+            const seconds = Math.floor(secs % 60);
+            return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // ── Custom Added presentation controls & scaling ─────
+        
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('collapsed');
+        }
+
+        function initImagePreviews() {
+            const images = document.querySelectorAll('.slide img');
+            images.forEach(img => {
+                img.style.cursor = 'zoom-in';
+                img.addEventListener('click', function() {
+                    openImagePreview(this.src, this.alt || 'Technical Visual Reference');
+                });
+            });
+        }
+
+        function openImagePreview(src, alt) {
+            const modal = document.getElementById('preview-modal');
+            const modalImg = document.getElementById('preview-modal-img');
+            const captionText = document.getElementById('preview-modal-caption');
+            
+            modal.style.display = "flex";
+            modal.offsetHeight; // force reflow
+            modal.classList.add('show');
+            modalImg.src = src;
+            captionText.textContent = alt;
+        }
+
+        function closeImagePreview() {
+            const modal = document.getElementById('preview-modal');
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = "none";
+            }, 350);
+        }
+
+        function scaleSmallFonts() {
+            const elements = document.querySelectorAll('.sidebar *, .slide *, .controls-bar *');
+            elements.forEach(el => {
+                if (el.tagName === 'I' || (el.tagName === 'SPAN' && el.classList.contains('slide-tag'))) return;
+                if (el.closest('.controls-bar') && (el.tagName === 'BUTTON' || el.tagName === 'I')) return;
+                
+                const computed = window.getComputedStyle(el);
+                const fontSizeStr = computed.fontSize;
+                if (fontSizeStr && fontSizeStr.endsWith('px')) {
+                    const size = parseFloat(fontSizeStr);
+                    if (size > 0 && size <= 14.5) {
+                        el.style.setProperty('font-size', (size + 2) + 'px', 'important');
+                    }
+                }
+            });
+        }
+
+        function updateSlideTagsDynamically() {
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach((slide, idx) => {
+                const tagEl = slide.querySelector('.slide-tag');
+                if (tagEl) {
+                    const originalText = tagEl.textContent;
+                    const parts = originalText.split('/');
+                    if (parts.length > 1) {
+                        const slideNamePart = parts.slice(1).join('/');
+                        tagEl.textContent = `${String(idx).padStart(2, '0')} /${slideNamePart}`;
+                    }
+                }
+            });
+        }
+
+        window.addEventListener('load', () => {
+            initImagePreviews();
+            scaleSmallFonts();
+            updateSlideTagsDynamically();
+        });
     </script>
+
+    <!-- Glassmorphic Image Preview Modal -->
+    <div id="preview-modal" class="preview-modal" onclick="closeImagePreview()">
+        <span class="preview-modal-close" onclick="closeImagePreview()"><i class="fa-solid fa-xmark"></i></span>
+        <img class="preview-modal-content" id="preview-modal-img" onclick="event.stopPropagation()">
+        <div class="preview-modal-caption" id="preview-modal-caption"></div>
+    </div>
 </body>
 </html>
