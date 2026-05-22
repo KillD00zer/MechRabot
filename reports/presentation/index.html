@@ -802,6 +802,87 @@
             50%, 100% { left: 100%; }
         }
 
+        /* ── Finished Banner & Animation ───────────────────── */
+        .finished-banner {
+            position: relative;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(59, 130, 246, 0.12) 100%);
+            border: 1.5px solid rgba(16, 185, 129, 0.35);
+            border-radius: 12px;
+            padding: 14px 20px;
+            text-align: center;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.15), inset 0 0 10px rgba(16, 185, 129, 0.1);
+            animation: pulseFinished 3s infinite ease-in-out;
+        }
+
+        .finished-text {
+            font-family: 'Outfit', sans-serif;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 2;
+        }
+
+        .finished-glow {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.25), transparent);
+            animation: shineSweep 4s infinite ease-in-out;
+            z-index: 1;
+        }
+
+        .finished-sparkles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .sparkle {
+            position: absolute;
+            font-size: 14px;
+            opacity: 0;
+            animation: sparkleFloat 4s infinite ease-in-out;
+        }
+
+        .sparkle.s1 { left: 10%; top: 20%; animation-delay: 0s; }
+        .sparkle.s2 { right: 12%; top: 15%; animation-delay: 1.5s; }
+        .sparkle.s3 { left: 50%; bottom: 10%; animation-delay: 0.8s; }
+
+        @keyframes pulseFinished {
+            0%, 100% {
+                border-color: rgba(16, 185, 129, 0.35);
+                box-shadow: 0 0 20px rgba(16, 185, 129, 0.15);
+                transform: scale(1);
+            }
+            50% {
+                border-color: rgba(59, 130, 246, 0.7);
+                box-shadow: 0 0 25px rgba(59, 130, 246, 0.45);
+                transform: scale(1.025);
+            }
+        }
+
+        @keyframes sparkleFloat {
+            0% { transform: translateY(10px) scale(0.5); opacity: 0; }
+            50% { opacity: 0.85; }
+            100% { transform: translateY(-15px) scale(1.2); opacity: 0; }
+        }
+
         /* ── Custom Theme Scrollbars ────────────────────── */
         ::-webkit-scrollbar {
             width: 8px;
@@ -3171,11 +3252,132 @@ generator_template = [ChatMessage.from_user(
                 </div>
             </div>
 
+            <!-- Slide 29: Team, Repo, and Live UI Links -->
+            <div class="slide" data-slide-name="Project Team &amp; Links">
+                <div class="slide-header">
+                    <span class="slide-tag">28 / Contact &amp; Reference</span>
+                    <h3 class="slide-title">Project Genesis: Meet the MechRabot Team</h3>
+                </div>
+                <div class="slide-content split-columns" style="grid-template-columns: 1.15fr 1fr; gap: 32px; align-items: stretch;">
+                    
+                    <!-- Left Column: Core Engineering Team -->
+                    <div class="card card-accent" style="display:flex; flex-direction:column; gap:16px; padding:24px; background: rgba(31, 40, 51, 0.5); justify-content:center; height:100%;">
+                        <div>
+                            <h4 style="font-family:'Outfit'; font-size:15px; color:var(--primary); margin:0 0 12px 0;"><i class="fa-solid fa-users-gear"></i> Core Engineering &amp; Research Team</h4>
+                            <p style="font-size:12px; color:var(--text-muted); line-height:1.5; margin:0 0 16px 0;">
+                                The specialized researchers and system developers behind MECHRABOT's layout-aware hybrid RAG engine:
+                            </p>
+                            
+                            <!-- Team List -->
+                            <div style="display:flex; flex-direction:column; gap:10px;">
+                                <!-- Member 1 -->
+                                <div style="display:flex; align-items:center; gap:12px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); padding:8px 12px; border-radius:10px; transition:all 0.25s ease;" onmouseover="this.style.borderColor='var(--primary)';" onmouseout="this.style.borderColor='rgba(255,255,255,0.05)';">
+                                    <div style="width:34px; height:34px; background:rgba(234,179,8,0.1); border-radius:50%; display:flex; align-items:center; justify-content:center; color:var(--primary); font-size:13px;">
+                                        <i class="fa-solid fa-user"></i>
+                                    </div>
+                                    <div style="display:flex; flex-direction:column; gap:1px; flex-grow:1;">
+                                        <h5 style="color:#fff; margin:0; font-size:11.5px; font-weight:700;">Ahmed Ezzat Mostafa</h5>
+                                        <span style="font-size:9.5px; color:var(--text-muted);"><i class="fa-solid fa-envelope" style="font-size:8px; margin-right:4px;"></i>7amodivic@gmail.com</span>
+                                    </div>
+                                </div>
+
+                                <!-- Member 2 -->
+                                <div style="display:flex; align-items:center; gap:12px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); padding:8px 12px; border-radius:10px; transition:all 0.25s ease;" onmouseover="this.style.borderColor='var(--secondary)';" onmouseout="this.style.borderColor='rgba(255,255,255,0.05)';">
+                                    <div style="width:34px; height:34px; background:rgba(59,130,246,0.1); border-radius:50%; display:flex; align-items:center; justify-content:center; color:var(--secondary); font-size:13px;">
+                                        <i class="fa-solid fa-user"></i>
+                                    </div>
+                                    <div style="display:flex; flex-direction:column; gap:1px; flex-grow:1;">
+                                        <h5 style="color:#fff; margin:0; font-size:11.5px; font-weight:700;">Mohamed Osama</h5>
+                                        <span style="font-size:9.5px; color:var(--text-muted);"><i class="fa-solid fa-envelope" style="font-size:8px; margin-right:4px;"></i>mosama54321@gmail.com</span>
+                                    </div>
+                                </div>
+
+                                <!-- Member 3 -->
+                                <div style="display:flex; align-items:center; gap:12px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); padding:8px 12px; border-radius:10px; transition:all 0.25s ease;" onmouseover="this.style.borderColor='#10b981';" onmouseout="this.style.borderColor='rgba(255,255,255,0.05)';">
+                                    <div style="width:34px; height:34px; background:rgba(16,185,129,0.1); border-radius:50%; display:flex; align-items:center; justify-content:center; color:#10b981; font-size:13px;">
+                                        <i class="fa-solid fa-user"></i>
+                                    </div>
+                                    <div style="display:flex; flex-direction:column; gap:1px; flex-grow:1;">
+                                        <h5 style="color:#fff; margin:0; font-size:11.5px; font-weight:700;">Hagar Abdelazeem Bakry</h5>
+                                        <span style="font-size:9.5px; color:var(--text-muted);"><i class="fa-solid fa-envelope" style="font-size:8px; margin-right:4px;"></i>ha2934@fayoum.edu.eg</span>
+                                    </div>
+                                </div>
+
+                                <!-- Member 4 -->
+                                <div style="display:flex; align-items:center; gap:12px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); padding:8px 12px; border-radius:10px; transition:all 0.25s ease;" onmouseover="this.style.borderColor='#ef4444';" onmouseout="this.style.borderColor='rgba(255,255,255,0.05)';">
+                                    <div style="width:34px; height:34px; background:rgba(239,68,68,0.1); border-radius:50%; display:flex; align-items:center; justify-content:center; color:#ef4444; font-size:13px;">
+                                        <i class="fa-solid fa-user"></i>
+                                    </div>
+                                    <div style="display:flex; flex-direction:column; gap:1px; flex-grow:1;">
+                                        <h5 style="color:#fff; margin:0; font-size:11.5px; font-weight:700;">Abdelrahman shaban</h5>
+                                        <span style="font-size:9.5px; color:var(--text-muted);"><i class="fa-solid fa-envelope" style="font-size:8px; margin-right:4px;"></i>Abdelrahmanbakry12@gmail.com</span>
+                                    </div>
+                                </div>
+
+                                <!-- Member 5 -->
+                                <div style="display:flex; align-items:center; gap:12px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); padding:8px 12px; border-radius:10px; transition:all 0.25s ease;" onmouseover="this.style.borderColor='#a855f7';" onmouseout="this.style.borderColor='rgba(255,255,255,0.05)';">
+                                    <div style="width:34px; height:34px; background:rgba(168,85,247,0.1); border-radius:50%; display:flex; align-items:center; justify-content:center; color:#a855f7; font-size:13px;">
+                                        <i class="fa-solid fa-user"></i>
+                                    </div>
+                                    <div style="display:flex; flex-direction:column; gap:1px; flex-grow:1;">
+                                        <h5 style="color:#fff; margin:0; font-size:11.5px; font-weight:700;">Norhan Saeed</h5>
+                                        <span style="font-size:9.5px; color:var(--text-muted);"><i class="fa-solid fa-envelope" style="font-size:8px; margin-right:4px;"></i>nora.youness99@gmail.com</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Interactive Repository & Live App Action Panels -->
+                    <div style="display:flex; flex-direction:column; gap:14px; justify-content:center; align-items:stretch;">
+                        
+                        <!-- GitHub Repo Action Card -->
+                        <a href="https://github.com/KillD00zer/MechRabot" target="_blank" style="text-decoration:none; color:inherit; display:block;">
+                            <div class="card" style="border: 1px solid var(--glass-border); padding: 16px; border-radius: 14px; display:flex; gap:14px; align-items:center; background: rgba(11, 12, 16, 0.45); transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); cursor:pointer;" onmouseover="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 8px 24px var(--primary-glow)';" onmouseout="this.style.borderColor='var(--glass-border)'; this.style.boxShadow='none';">
+                                <div style="width:44px; height:44px; background:rgba(234,179,8,0.1); border-radius:10px; display:flex; align-items:center; justify-content:center; color:var(--primary); font-size:20px; flex-shrink:0;">
+                                    <i class="fa-brands fa-github"></i>
+                                </div>
+                                <div style="display:flex; flex-direction:column; gap:2px;">
+                                    <span style="font-size:9px; font-family:'Fira Code'; color:var(--primary); font-weight:700; letter-spacing:0.5px;">OPEN-SOURCE REPOSITORY</span>
+                                    <h4 style="color:#fff; font-size:13px; font-weight:700; margin:0;">KillD00zer/MechRabot</h4>
+                                    <p style="font-size:10px; color:var(--text-muted); margin:0; line-height:1.35;">Access raw ingestion notebooks, hybrid chunkers, and deployment scripts.</p>
+                                </div>
+                            </div>
+                        </a>
+
+                        <!-- Vercel Live UI Action Card -->
+                        <a href="https://mechrabot-qkvbqf6av-ki-ll-d00zer-s-projects.vercel.app/" target="_blank" style="text-decoration:none; color:inherit; display:block;">
+                            <div class="card" style="border: 1px solid var(--glass-border); padding: 16px; border-radius: 14px; display:flex; gap:14px; align-items:center; background: rgba(11, 12, 16, 0.45); transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); cursor:pointer;" onmouseover="this.style.borderColor='var(--secondary)'; this.style.boxShadow='0 8px 24px var(--secondary-glow)';" onmouseout="this.style.borderColor='var(--glass-border)'; this.style.boxShadow='none';">
+                                <div style="width:44px; height:44px; background:rgba(59,130,246,0.1); border-radius:10px; display:flex; align-items:center; justify-content:center; color:var(--secondary); font-size:20px; flex-shrink:0;">
+                                    <i class="fa-solid fa-globe"></i>
+                                </div>
+                                <div style="display:flex; flex-direction:column; gap:2px;">
+                                    <span style="font-size:9px; font-family:'Fira Code'; color:var(--secondary); font-weight:700; letter-spacing:0.5px;">LIVE INTERACTIVE RUNTIME</span>
+                                    <h4 style="color:#fff; font-size:13px; font-weight:700; margin:0;">MechRabot Vercel Web GUI</h4>
+                                    <p style="font-size:10px; color:var(--text-muted); margin:0; line-height:1.35;">Experience the bilingual diagnostic UI with active prompt configurations.</p>
+                                </div>
+                            </div>
+                        </a>
+
+                        <!-- Cool Finished Animation Banner -->
+                        <div class="finished-banner">
+                            <div class="finished-glow"></div>
+                            <span class="finished-text">🎉 PRESENTATION FINISHED! 🏁</span>
+                            <div class="finished-sparkles">
+                                <span class="sparkle s1">✨</span>
+                                <span class="sparkle s2">⚙️</span>
+                                <span class="sparkle s3">🚀</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <!-- Lower Control Bar -->
         <div class="controls-bar">
-            <div class="slide-counter" id="slide-counter">01 / 28</div>
+            <div class="slide-counter" id="slide-counter">01 / 29</div>
             <div class="progress-container">
                 <div class="progress-bar" id="progress-bar"></div>
             </div>
