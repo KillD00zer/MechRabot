@@ -38,7 +38,7 @@ def build_pipeline(use_reasoner: bool = False) -> Pipeline:
         model="deepseek-reasoner",
         api_key=Secret.from_env_var("deepseek_APi"),
         api_base_url="https://api.deepseek.com",
-        generation_kwargs={"temperature": 0.2},
+        generation_kwargs={},
     ))
 
     # ── 2. Embedder: BGE-M3 → sparse + dense + colbert ───────────────
@@ -52,12 +52,13 @@ def build_pipeline(use_reasoner: bool = False) -> Pipeline:
 
     # ── 4. Generator: final answer ────────────────────────────────────
     gen_model = "deepseek-reasoner" if use_reasoner else "deepseek-chat"
+    gen_kwargs = {} if use_reasoner else {"temperature": 0.4}
     pipe.add_component("generator_prompt", ChatPromptBuilder(template=generator_template, required_variables=["documents", "query", "mode"]))
     pipe.add_component("generator_llm", OpenAIChatGenerator(
         model=gen_model,
         api_key=Secret.from_env_var("deepseek_APi"),
         api_base_url="https://api.deepseek.com",
-        generation_kwargs={"temperature": 0.4},
+        generation_kwargs=gen_kwargs,
     ))
 
     # ── Connections ───────────────────────────────────────────────────
