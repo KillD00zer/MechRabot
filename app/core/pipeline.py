@@ -19,7 +19,7 @@ from app.core.embedder import MechRabotEmbedder
 from app.core.retriever import MechRabotRetriever
 
 
-def build_pipeline(use_reasoner: bool = False) -> Pipeline:
+def build_pipeline(use_reasoner: bool = False, model = None, client = None) -> Pipeline:
     """
     Factory function — returns a fully wired MechRabot pipeline.
     Each call creates fresh component instances (required by Haystack).
@@ -35,17 +35,18 @@ def build_pipeline(use_reasoner: bool = False) -> Pipeline:
     # ── 1. Refiner: translate + refine the query ──────────────────────
     pipe.add_component("refiner_prompt", ChatPromptBuilder(template=translator_refiner_template, required_variables=["query"]))
     pipe.add_component("refiner_llm", OpenAIChatGenerator(
-        model="deepseek-v4-pro",
+        model="deepseek-v4-flash",
         api_key=Secret.from_env_var("deepseek_APi"),
         api_base_url="https://api.deepseek.com",
         generation_kwargs={},
     ))
 
     # ── 2. Embedder: BGE-M3 → sparse + dense + colbert ───────────────
-    pipe.add_component("embedder", MechRabotEmbedder())
+    pipe.add_component("embedder", MechRabotEmbedder(model=model))
 
     # ── 3. Retriever: Qdrant hybrid search ────────────────────────────
-    client = QdrantClient(url=os.environ["QDRANT_URL"], api_key=os.environ["QDRANT_API_KEY"])
+    if client is None:
+        client = QdrantClient(url=os.environ["QDRANT_URL"], api_key=os.environ["QDRANT_API_KEY"])
     pipe.add_component("retriever", MechRabotRetriever(
         client=client, col_name="mechrabot_Vdb_1",
     ))

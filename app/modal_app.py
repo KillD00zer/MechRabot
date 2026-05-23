@@ -61,9 +61,21 @@ class MechRabotService:
 
     @modal.enter()
     def setup(self):
+        import os
+        from qdrant_client import QdrantClient
         from app.core.pipeline import build_pipeline
-        self.pipe_standard = build_pipeline(use_reasoner=False)
-        self.pipe_super = build_pipeline(use_reasoner=True)
+
+        # 1. Instantiate the heavy embedding model weights ONCE in GPU VRAM
+        print("Loading BGE-M3 model weights into GPU VRAM...")
+        bge_model = BGEM3FlagModel(MODEL_NAME, use_fp16=True)
+
+        # 2. Instantiate a shared Qdrant client
+        print("Initializing Qdrant client...")
+        qdrant_client = QdrantClient(url=os.environ["QDRANT_URL"], api_key=os.environ["QDRANT_API_KEY"])
+
+        # 3. Build pipelines sharing the loaded model and client
+        self.pipe_standard = build_pipeline(use_reasoner=False, model=bge_model, client=qdrant_client)
+        self.pipe_super = build_pipeline(use_reasoner=True, model=bge_model, client=qdrant_client)
 
     @modal.method()
     def query(self, text: str, mode: str = "restricted") -> dict:

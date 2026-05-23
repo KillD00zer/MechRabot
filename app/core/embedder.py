@@ -11,8 +11,11 @@ from FlagEmbedding import BGEM3FlagModel
 class MechRabotEmbedder:
     """BGE-M3 embedder: query → sparse + dense + colbert vectors."""
 
-    def __init__(self, model_name='BAAI/bge-m3', use_fp16=True, batch_size=64, max_length=512):
-        self.model = BGEM3FlagModel(model_name, use_fp16=use_fp16)
+    def __init__(self, model=None, model_name='BAAI/bge-m3', use_fp16=True, batch_size=64, max_length=512):
+        if model is not None:
+            self.model = model
+        else:
+            self.model = BGEM3FlagModel(model_name, use_fp16=use_fp16)
         self.batch_size = batch_size
         self.max_length = max_length
 
