@@ -35,7 +35,7 @@ def build_pipeline(use_reasoner: bool = False) -> Pipeline:
     # ── 1. Refiner: translate + refine the query ──────────────────────
     pipe.add_component("refiner_prompt", ChatPromptBuilder(template=translator_refiner_template, required_variables=["query"]))
     pipe.add_component("refiner_llm", OpenAIChatGenerator(
-        model="deepseek-reasoner",
+        model="deepseek-v4-pro",
         api_key=Secret.from_env_var("deepseek_APi"),
         api_base_url="https://api.deepseek.com",
         generation_kwargs={},
@@ -51,7 +51,7 @@ def build_pipeline(use_reasoner: bool = False) -> Pipeline:
     ))
 
     # ── 4. Generator: final answer ────────────────────────────────────
-    gen_model = "deepseek-reasoner" if use_reasoner else "deepseek-chat"
+    gen_model = "deepseek-v4-pro" if use_reasoner else "deepseek-v4-flash"
     gen_kwargs = {} if use_reasoner else {"temperature": 0.4}
     pipe.add_component("generator_prompt", ChatPromptBuilder(template=generator_template, required_variables=["documents", "query", "mode"]))
     pipe.add_component("generator_llm", OpenAIChatGenerator(
